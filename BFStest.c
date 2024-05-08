@@ -205,19 +205,25 @@ struct coordinates movedCoordinate(struct coordinates cMove, struct coordinates 
 void BFS(struct coordinates currentCoordinate) {
     int duplication_check = 0;
     struct coordinates beingExplored; 
+    Queue q;            //create a BFS queue
+    initQueue(&q);      //initialize the BFS queue using the initQueue() method
+    //while loop which runs until a duplicate is found or until the time limit has been reached
     while (duplication_check != 1) {
         //TODO (BFS ALGORITHM)
         //explore all of the squares adjacent to currently occupied square
-        exploreForward(currentCoordinate, beingExplored);
-        exploreRight(currentCoordinate, beingExplored);
-        exploreLeft(currentCoordinate, beingExplored);
-        exploreBehind(currentCoordinate, beingExplored);
+        exploreForward(currentCoordinate, beingExplored, q);
+        exploreRight(currentCoordinate, beingExplored, q);
+        exploreLeft(currentCoordinate, beingExplored, q);
+        exploreBehind(currentCoordinate, beingExplored, q);
         
 
         //TODO: write the code to check for empty squares identified and to move to that square
-
+        struct coordinates navigateTo = dequeue(&q);        //deque one of the visited coordinates from the queue and 
+        //add it to a new struct called coordinates
+        robotNavigation(currentCoordinate, navigateTo);
+        currentCoordinate = navigateTo; //once the robotNavigation() method has been executed set the robot's current coordinate to the navigateTo coordinate. 
         //TODO: write the BFS algorithm namely implement the queue to store the level to know which squares need to be explord.
-
+        
 
         //checks if the coordinate being explored is in the arraylist
         duplication_check = isInArrayList(&list, beingExplored);
@@ -227,23 +233,40 @@ void BFS(struct coordinates currentCoordinate) {
 }
 
 /**
+ * method that creates a path for the robot to navigate to the 
+ * coordinate that is selected from teh queue
+*/
+void robotNavigation(struct coordinates current, struct coordinates destination) {
+
+}
+
+/**
  * method to explore the square ahead of the currently occupied square
  * adds the coordinate explored to the array
+ * cc represents the current coordinates and be represents the coordinate being explored
 */
-void exploreForward(struct coordinates cc, struct coordinates be) {
+int exploreForward(struct coordinates cc, struct Queue q) {
+    int check = 0;
+    struct coordinates be;
     be.x = cc.x;
     be.y = cc.y + 1;
+    int duplication_check = isInArrayList(&list, be);
+    if(duplication_check > 0) {
+        check = 1;
+    }
     struct squareType st = checkSquare();
     char propertyAtCoordinate = returnSquareProperty(st);
     be.objectAtLocation = propertyAtCoordinate;
     addElement(&list, be);
+    enqueue(&q, be);
+    return check;
 }
 
 /**
  * method to explore the square to the right of the currently occupied square
  * adds the coordinate explored to the array
 */
-void exploreRight(struct coordinates cc, struct coordinates be) {
+void exploreRight(struct coordinates cc, struct coordinates be, struct Queue q) {
     be.x = cc.x + 1;
     be.y = cc.y;
     rotateRobot(0);
@@ -258,7 +281,7 @@ void exploreRight(struct coordinates cc, struct coordinates be) {
  * method to explore the square to the left of the currently occupied square
  * adds the coordinate explored to the array
 */
-void exploreLeft(struct coordinates cc, struct coordinates be) {
+void exploreLeft(struct coordinates cc, struct coordinates be, struct Queue q) {
     be.x = cc.x - 1;
     be.y = cc.y;
     rotateRobot(1);
@@ -273,7 +296,7 @@ void exploreLeft(struct coordinates cc, struct coordinates be) {
  * method to explore the square behind of the currently occupied square
  * adds the coordinate explored to the array
 */
-void exploreBehind(struct coordinates cc, struct coordinates be) {
+void exploreBehind(struct coordinates cc, struct coordinates be, struct Queue q) {
     be.x = cc.x;
     be.y = cc.y - 1;
     rotateRobot(2);
