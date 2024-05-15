@@ -36,10 +36,16 @@ struct IRSensors measureIRData() {
 }
 
 /**
- * move the robot forward or backward
+ * move the robot forward or backward, takes as input 0 or 1, 0 indicates backwards and 1 indicates forward. 
 */
-void moveRobotForwardOrBackward(int distance) {
+void moveRobotForwardOrBackward(int direction) {
     //TODO
+    if (direction = 0) {
+        rotateRobot(2);
+        moveRobotForwardOrBackward(1);
+    } else {
+        //add code here to rotate the robot a certain distance to move the robot forwards.
+    }
 }
 
 /**

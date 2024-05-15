@@ -163,46 +163,34 @@ void main() {
 /**
  * moveRobot method controls the moves of the robot 
 */
-struct coordinates moveRobot(struct coordinates) {
-    /**
-     * assign integer dirSelVal a random integer between 0 and 3 
-     * 0 moves the robot up, 1 moves the robot right, 2 moves 
-     * the robot down and 3 moves the robot left. 
-    */
+struct coordinates moveRobot(struct coordinates inputCoordinate, int dirSelVal) {
+    //dirSelVal determines the direction that the robot needs to move in 
 
-    struct coordinates c1;
+    struct coordinates c;
 
-    int dirSelVal = rand() % 4;
     switch (dirSelVal) {
-        case 0:
-            struct coordinates cMove; 
-            cMove.x = 0;
-            cMove.y = 1;
-            movedCoordinate(cMove, c1);
+        case 0: //move the robot one step forward
+            c.x = inputCoordinate.x;
+            c.y = inputCoordinate.y + 1;
+            moveRobotForwardOrBackward(1);            
             break;
-        case 1:
-            cMove.x = 1;
-            cMove.y = 0;
-            movedCoordinate(cMove, c1);
+        case 1: //move the robot one step to the right
+            c.x = inputCoordinate.x + 1;
+            c.y = inputCoordinate.y;
+            rotateRobot(0);
             break;
-        case 2:
-            cMove.x = 0;
-            cMove.y = -1;
-            movedCoordinate(cMove, c1);
+        case 2: //move the robot one step to the left
+            c.x = inputCoordinate.x - 1;
+            c.y = inputCoordinate.y;
             break;
-        case 3:
-            cMove.x = -1;
-            cMove.y = 0;
-            movedCoordinate(cMove, c1);
+            rotateRobot(1);
+        case 3: //move the robot one step backwards
+            c.x = inputCoordinate.x;
+            c.y = inputCoordinate.y - 1;
+            moveRobotForwardOrBackward(0);
             break;
     
     }
-}
-
-//irrelevant and needs to probably be removed. 
-struct coordinates movedCoordinate(struct coordinates cMove, struct coordinates cInitial) {
-    cInitial.x = cInitial.x + cMove.x;
-    cInitial.y = cInitial.y + cMove.y;
 }
 
 /**
