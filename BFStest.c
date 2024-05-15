@@ -153,7 +153,13 @@ void main() {
 
 
 
-
+/**
+ * --------------------------------------------------------------------------------------------------
+ * **************************************************************************************************
+ * --------------POTENTIALLY USELESS METHOD MAY NOT BE NEEDED IN FINAL IMPLEMENATATION---------------
+ * **************************************************************************************************
+ * --------------------------------------------------------------------------------------------------
+*/
 /**
  * moveRobot method controls the moves of the robot 
 */
@@ -231,11 +237,26 @@ void BFS(struct coordinates currentCoordinate) {
 
 /**
  * method that creates a path for the robot to navigate to the 
- * coordinate that is selected from teh queue
+ * coordinate that is selected from the queue
 */
 void robotNavigation(struct coordinates current, struct coordinates destination) {
-
+    //currentidea: BFS algorithm ensures that the coordinates below are always explored
+    //forming a pyramid of sorts, so it is always possible to navigate down and to the right or left.
 }
+
+
+/**
+ * finds the type of coordinate 
+*/
+int isInArrayList(ArrayList *list, struct coordinates target) {
+    for (size_t i = 0; i < list->size; i++) {
+        if (list->array[i].x == target.x && list->array[i].y == target.y) {
+            return 1; 
+        }
+    }
+    return 0;
+}
+
 
 /**
  * method to explore the square ahead of the currently occupied square
