@@ -204,24 +204,25 @@ struct coordinates movedCoordinate(struct coordinates cMove, struct coordinates 
 */
 void BFS(struct coordinates currentCoordinate) {
     int duplication_check = 0;
-    struct coordinates beingExplored; 
+    struct coordinates beingExplored = currentCoordinate; 
+    struct coordinates navigateTo;
     Queue q;            //create a BFS queue
     initQueue(&q);      //initialize the BFS queue using the initQueue() method
     //while loop which runs until a duplicate is found or until the time limit has been reached
     while (duplication_check < 1) {
         //TODO (BFS ALGORITHM)
         //explore all of the squares adjacent to currently occupied square
-        duplication_check = exploreForward(currentCoordinate, q);
-        duplication_check = duplication_check + exploreRight(currentCoordinate, q);
-        duplication_check = duplication_check + exploreLeft(currentCoordinate, q);
-        duplication_check = duplication_check + exploreBehind(currentCoordinate, q); //if duplication_check > 0 break while loop
+        duplication_check = exploreForward(beingExplored, q);
+        duplication_check = duplication_check + exploreRight(beingExplored, q);
+        duplication_check = duplication_check + exploreLeft(beingExplored, q);
+        duplication_check = duplication_check + exploreBehind(beingExplored, q); //if duplication_check > 0 break while loop
         
 
         //TODO: write the code to check for empty squares identified and to move to that square
-        struct coordinates navigateTo = dequeue(&q);        //deque one of the visited coordinates from the queue and 
+        navigateTo = dequeue(&q);        //deque one of the visited coordinates from the queue and 
         //add it to a new struct called coordinates
-        robotNavigation(currentCoordinate, navigateTo);
-        currentCoordinate = navigateTo; //once the robotNavigation() method has been executed set the robot's current coordinate to the navigateTo coordinate. 
+        robotNavigation(beingExplored, navigateTo);
+        beingExplored = navigateTo; //once the robotNavigation() method has been executed set the robot's beingExplored coordinate to the navigateTo coordinate. 
         //TODO: write the BFS algorithm namely implement the queue to store the level to know which squares need to be explord.
         
     }
