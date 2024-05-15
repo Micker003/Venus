@@ -176,12 +176,15 @@ struct coordinates moveRobot(struct coordinates inputCoordinate, int dirSelVal) 
             c.x = inputCoordinate.x + 1;
             c.y = inputCoordinate.y;
             rotateRobot(0);
+            moveRobotForwardOrBackward(1);
             break;
         case 2: //move the robot one step to the left
             c.x = inputCoordinate.x - 1;
             c.y = inputCoordinate.y;
-            break;
             rotateRobot(1);
+            moveRobotForwardOrBackward(1);
+            break;
+           
         case 3: //move the robot one step backwards
             c.x = inputCoordinate.x;
             c.y = inputCoordinate.y - 1;
@@ -189,6 +192,7 @@ struct coordinates moveRobot(struct coordinates inputCoordinate, int dirSelVal) 
             break;
     
     }
+    return c;
 }
 
 /**
@@ -228,7 +232,32 @@ void BFS(struct coordinates currentCoordinate) {
 void robotNavigation(struct coordinates current, struct coordinates destination) {
     //currentidea: BFS algorithm ensures that the coordinates below are always explored
     //forming a pyramid of sorts, so it is always possible to navigate down and to the right or left.
+    int yDistanceToCover = destination.y - current.y;
+    int xDistanceToCover = destination.x - current.x;
+
+    if (yDistanceToCover > 0) {
+        //if y distance to cover is positive then we must move up 
+        current = moveRobot(current, 0);
+    } else if (yDistanceToCover < 0) {
+        //if y distance to cover is negative then we must move down 
+        current = moveRobot(current, 3);
+    } 
     
+    if (xDistanceToCover > 0) {
+        //if x distance to cover is positive we must move to the right
+        current = moveRobot(current,1);
+    } else if (xDistanceToCover < 0) {
+        //if x distance to cover is negative we must move to the left
+        current = moveRobot(current, 2);
+    }
+    
+}
+
+/**
+ * method to verify if the coordinate above can be moved to 
+*/
+int verifyForwardSquare(struct coordinates forwardSQ) {
+    //iterate through the arraylist and find the coordinate, then check what kind of value the coordinate has for the square
 }
 
 
@@ -261,7 +290,7 @@ int exploreForward(struct coordinates cc, struct Queue q) {
     }
     struct squareType st = checkSquare();
     char propertyAtCoordinate = returnSquareProperty(st);
-    be.objectAtLocation = propertyAtCoordinate;
+    be.objectAtLocation = propertyAtCoordinate; // add the value for the object at location to the coordinate before adding to list 
     addElement(&list, be);
     enqueue(&q, be);
     return check;
