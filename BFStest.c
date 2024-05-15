@@ -7,8 +7,7 @@
 #define initialy 0
 #define MAX_SIZE 100
 
-//TODO REMINDER TO SELF, Ensure that arraylist with the coordinates is storing the coordinates and the characted that denotes what type of coordinate it is as opposed to the struct with the sensor outputs. 
-//This will be needed to handle the navigation part of the algorithm. 
+//<<CHECK TODO ON LINE 277 TO PICK UP ON THE NAVIGATION METHOD>>
 
 
 int IRthreshold = 100;  //threshold for which IR sensor data is determined to be color black
@@ -234,43 +233,71 @@ void robotNavigation(struct coordinates current, struct coordinates destination)
     //forming a pyramid of sorts, so it is always possible to navigate down and to the right or left.
     int yDistanceToCover = destination.y - current.y;
     int xDistanceToCover = destination.x - current.x;
-
-    if (yDistanceToCover > 0) {
-        //if y distance to cover is positive then we must move up 
-        current = moveRobot(current, 0);
-    } else if (yDistanceToCover < 0) {
-        //if y distance to cover is negative then we must move down 
-        current = moveRobot(current, 3);
-    } 
     
-    if (xDistanceToCover > 0) {
+    while (!(current.y == destination.y)) {
+        struct coordinates fwd = current; 
+        fwd.y = current.y+1;
+        int fcheck = findObjectAtCoordinate(&list, fwd);
+        struct coordinates bwd = current; 
+        bwd.y = current.y-1;
+        int bcheck = findObjectAtCoordinate(&list, bwd);
+        if (yDistanceToCover > 0 && fcheck == 1) {
+            //if y distance to cover is positive then we must move up 
+            current = moveRobot(current, 0);
+    }  else if (yDistanceToCover > 0 && fcheck == 0) {
+            if (xDistanceToCover > 0) {
+                current = moveRobot(current, 1); //if the forward coordinate isn't empty we move one to the right
+            } else {
+                current = moveRobot(current, 2); //if it cannot go right then move to the left. 
+            }
+            
+    }  
+    
+        if (yDistanceToCover < 0 && bcheck == 1) {
+            //if y distance to cover is negative then we must move down 
+            current = moveRobot(current, 3);
+        } else if (yDistanceToCover < 0 && bcheck == 0) {
+            if (xDistanceToCover > 0) {
+                current = moveRobot(current, 1); //if the forward coordinate isn't empty we move one to the right
+            } else {
+                current = moveRobot(current, 2); //if it cannot go right then move to the left. 
+            }
+        }
+    }
+    
+    while (!(current.x == destination.x)) {
+        if (xDistanceToCover > 0) {
         //if x distance to cover is positive we must move to the right
         current = moveRobot(current,1);
     } else if (xDistanceToCover < 0) {
         //if x distance to cover is negative we must move to the left
         current = moveRobot(current, 2);
     }
+    }
+    //TODO:make sure that the robot moves to the right or left to reach the target x coordinate without hitting an object. 
+    //TODO: refactor the code in order to reduce complexity of robotNavigation method. 
     
 }
 
-/**
- * method to verify if the coordinate above can be moved to 
-*/
-int verifyForwardSquare(struct coordinates forwardSQ) {
-    //iterate through the arraylist and find the coordinate, then check what kind of value the coordinate has for the square
-}
-
 
 /**
- * finds the type of coordinate 
+ * returns if square is free and has been discovered
 */
-int isInArrayList(ArrayList *list, struct coordinates target) {
+int findObjectAtCoordinate(ArrayList *list, struct coordinates target) {
+    char objectAtCoordinate;
     for (size_t i = 0; i < list->size; i++) {
         if (list->array[i].x == target.x && list->array[i].y == target.y) {
-            return 1; 
+            objectAtCoordinate = list->array->objectAtLocation;
+        } else {
+            return 0;
         }
     }
-    return 0;
+    
+    if (objectAtCoordinate = 1) {
+        return 1; 
+    } else {
+        return 0;
+    }
 }
 
 
