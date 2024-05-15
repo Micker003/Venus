@@ -318,6 +318,14 @@ bool vl53l0x_init(const iic_index_t iic)
     return true;
 }
 
+bool forward_distance_init(){
+    return vl53l0x_init(IIC0);
+}
+
+bool downward_distance_init(){
+    return vl53l0x_init(IIC1);
+}
+
 bool vl53l0x_read_range_single(uint16_t *range, const iic_index_t iic)
 {
     bool success = !iic_write_register(iic, IIC_DEVICE_ADDRESS, 0x80, &one,1);
@@ -396,5 +404,15 @@ bool vl53l0x_read_range_single(uint16_t *range, const iic_index_t iic)
 }
 
 
+int forwardDistanceData(){
+    uint16_t range = 0;
+    vl53l0x_read_range_single(*range,IIC0);
+    return range;
+}
 
+int downwardDistanceData(){
+    uint16_t range = 0;
+    vl53l0x_read_range_single(*range,IIC1);
+    return range;
+}
 
