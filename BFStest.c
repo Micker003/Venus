@@ -208,13 +208,13 @@ void BFS(struct coordinates currentCoordinate) {
     Queue q;            //create a BFS queue
     initQueue(&q);      //initialize the BFS queue using the initQueue() method
     //while loop which runs until a duplicate is found or until the time limit has been reached
-    while (duplication_check != 1) {
+    while (duplication_check < 1) {
         //TODO (BFS ALGORITHM)
         //explore all of the squares adjacent to currently occupied square
-        exploreForward(currentCoordinate, beingExplored, q);
-        exploreRight(currentCoordinate, beingExplored, q);
-        exploreLeft(currentCoordinate, beingExplored, q);
-        exploreBehind(currentCoordinate, beingExplored, q);
+        duplication_check = exploreForward(currentCoordinate, q);
+        duplication_check = duplication_check + exploreRight(currentCoordinate, q);
+        duplication_check = duplication_check + exploreLeft(currentCoordinate, q);
+        duplication_check = duplication_check + exploreBehind(currentCoordinate, q); //if duplication_check > 0 break while loop
         
 
         //TODO: write the code to check for empty squares identified and to move to that square
@@ -223,10 +223,6 @@ void BFS(struct coordinates currentCoordinate) {
         robotNavigation(currentCoordinate, navigateTo);
         currentCoordinate = navigateTo; //once the robotNavigation() method has been executed set the robot's current coordinate to the navigateTo coordinate. 
         //TODO: write the BFS algorithm namely implement the queue to store the level to know which squares need to be explord.
-        
-
-        //checks if the coordinate being explored is in the arraylist
-        duplication_check = isInArrayList(&list, beingExplored);
         
     }
     main();
@@ -266,45 +262,69 @@ int exploreForward(struct coordinates cc, struct Queue q) {
  * method to explore the square to the right of the currently occupied square
  * adds the coordinate explored to the array
 */
-void exploreRight(struct coordinates cc, struct coordinates be, struct Queue q) {
+int exploreRight(struct coordinates cc, struct Queue q) {
+    int check = 0;
+    struct coordinates be;
     be.x = cc.x + 1;
     be.y = cc.y;
+    int duplication_check = isInArrayList(&list, be);
+    if(duplication_check > 0) {
+        check = 1;
+    }
     rotateRobot(0);
     struct squareType st = checkSquare();
     char propertyAtCoordinate = returnSquareProperty(st);
     be.objectAtLocation = propertyAtCoordinate;
     addElement(&list, be);
+    enqueue(&q, be);
     rotateRobot(1);
+    return check;
 }
 
 /**
  * method to explore the square to the left of the currently occupied square
  * adds the coordinate explored to the array
 */
-void exploreLeft(struct coordinates cc, struct coordinates be, struct Queue q) {
+int exploreLeft(struct coordinates cc, struct Queue q) {
+    int check = 0;
+    struct coordinates be;
     be.x = cc.x - 1;
     be.y = cc.y;
+    int duplication_check = isInArrayList(&list, be);
+    if(duplication_check > 0) {
+        check = 1;
+    }
     rotateRobot(1);
     struct squareType st = checkSquare();
     char propertyAtCoordinate = returnSquareProperty(st);
     be.objectAtLocation = propertyAtCoordinate;
     addElement(&list, be);
+    enqueue(&q, be);
     rotateRobot(0);
+    return check;
 }
 
 /**
  * method to explore the square behind of the currently occupied square
  * adds the coordinate explored to the array
 */
-void exploreBehind(struct coordinates cc, struct coordinates be, struct Queue q) {
+int exploreBehind(struct coordinates cc, struct Queue q) {
+    int check = 0;
+    struct coordinates be;
     be.x = cc.x;
     be.y = cc.y - 1;
+    int duplication_check = isInArrayList(&list, be);
+    if(duplication_check > 0) {
+        check = 1;
+    }
     rotateRobot(2);
     struct squareType st = checkSquare();
     char propertyAtCoordinate = returnSquareProperty(st);
     be.objectAtLocation = propertyAtCoordinate;
     addElement(&list, be);
+    enqueue(&q, be);
     rotateRobot(2);
+    return check;
 }
 
 
@@ -355,7 +375,7 @@ int isInArrayList(ArrayList *list, struct coordinates target) {
  * translates the struct squareType into a simple character that can be stored in coordinates
 */
 char returnSquareProperty(struct squareType s) {
-    //TODO
+    //TODO convert integer and character value inside of struct s to one of five possible char values and return said value. 
 }
 
 
