@@ -7,15 +7,42 @@
 
 #define VL53L0X_OUT_OF_RANGE (8190)
 
-bool vl53l0x_init(const iic_index_t iic);
+
+/**
+ * Initialize forward distance sensor
+ * Initialize the followings in main():
+ *      iic_init(IIC0);
+ *      switchbox_set_pin(IO_AR_SDA , SWB_IIC0_SDA);
+ *      switchbox_set_pin(IO_AR_SCL , SWB_IIC0_SCL);
+*/
+bool forward_distance_init();
+
+/**
+ * Initialize downward distance sensor
+ * Initialize the followings in main():
+ *      iic_init(IIC1);
+ *      switchbox_set_pin(IO_AR4, SWB_IIC1_SDA);
+ *      switchbox_set_pin(IO_AR5, SWB_IIC1_SCL);
+*/
+bool downward_distance_init();
 
 /**
  * Does a single range measurement
- * @param range contains the measured range or VL53L0X_OUT_OF_RANGE
- *        if out of range.
- * @return True if success, False if error
+ * @return measured distance in front of robot in millimeters
+ *         or VL53L0X_OUT_OF_RANGE if distance is out of range
+ *         for distance < 10 mm, distance = 10 mm
  * @note   Polling-based
  */
-bool vl53l0x_read_range_single(uint16_t *range, const iic_index_t iic);
+int forwardDistanceData();
+
+/**
+ * Does a single range measurement
+ * @return measured distance below robot arm in millimeters
+ *         or VL53L0X_OUT_OF_RANGE if distance is out of range
+ *         for distance < 10 mm, distance = 10 mm
+ * @note   Polling-based
+ */
+int downwardDistanceData();
+
 
 #endif /* VL53L0X_H */
