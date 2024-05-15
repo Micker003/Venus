@@ -7,6 +7,10 @@
 #define initialy 0
 #define MAX_SIZE 100
 
+//TODO REMINDER TO SELF, Ensure that arraylist with the coordinates is storing the coordinates and the characted that denotes what type of coordinate it is as opposed to the struct with the sensor outputs. 
+//This will be needed to handle the navigation part of the algorithm. 
+
+
 int IRthreshold = 100;  //threshold for which IR sensor data is determined to be color black
 ArrayList list;         //initialization of arraylist which will store all of the coordinates as well as their types
 
@@ -153,15 +157,9 @@ void main() {
 
 
 
+
 /**
- * --------------------------------------------------------------------------------------------------
- * **************************************************************************************************
- * --------------POTENTIALLY USELESS METHOD MAY NOT BE NEEDED IN FINAL IMPLEMENATATION---------------
- * **************************************************************************************************
- * --------------------------------------------------------------------------------------------------
-*/
-/**
- * moveRobot method controls the moves of the robot 
+ * moveRobot method controls the moving of the robot.
 */
 struct coordinates moveRobot(struct coordinates inputCoordinate, int dirSelVal) {
     //dirSelVal determines the direction that the robot needs to move in 
@@ -230,6 +228,7 @@ void BFS(struct coordinates currentCoordinate) {
 void robotNavigation(struct coordinates current, struct coordinates destination) {
     //currentidea: BFS algorithm ensures that the coordinates below are always explored
     //forming a pyramid of sorts, so it is always possible to navigate down and to the right or left.
+    
 }
 
 
@@ -386,6 +385,17 @@ int isInArrayList(ArrayList *list, struct coordinates target) {
 */
 char returnSquareProperty(struct squareType s) {
     //TODO convert integer and character value inside of struct s to one of five possible char values and return said value. 
+    if(s.boundaryPresent = 1) {
+        return "Boundary";
+    } else if (s.cliffPresent = 1) {
+        return "Cliff";
+    } else if (s.holePresent = 1) {
+        return "Hole";
+    } else if (s.blockType != NULL) {
+        return s.blockType + " " + s.blockColor;
+    } else {
+        return "Empty";
+    }
 }
 
 
