@@ -406,13 +406,13 @@ bool vl53l0x_read_range_single(uint16_t *range, const iic_index_t iic)
 
 int forwardDistanceData(){
     uint16_t range = 0;
-    vl53l0x_read_range_single(*range,IIC0);
+    vl53l0x_read_range_single(&range,IIC0);
     return range;
 }
 
 int downwardDistanceData(){
     uint16_t range = 0;
-    vl53l0x_read_range_single(*range,IIC1);
+    vl53l0x_read_range_single(&range,IIC1);
     return range;
 }
 
