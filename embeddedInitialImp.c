@@ -1,38 +1,72 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
+#include "distance.h"
+#include "IR_sensor.h"
+#include "embeddedInitialImp.h"
+
+//Method to initialize all sensors before usage
+bool embeddedInit(){
+    
+    IR_init();
+
+    switchbox_set_pin(IO_AR4, SWB_IIC0_SCL);
+    switchbox_set_pin(IO_AR5 , SWB_IIC0_SDA);
+    switchbox_set_pin(IO_AR_SCL , SWB_IIC1_SCL);
+    switchbox_set_pin(IO_AR_SDA , SWB_IIC1_SDA);
+
+    iic_init(IIC1);
+    iic_reset(IIC1);
+    iic_init(IIC0);
+    iic_reset(IIC0);
+
+    if (!forward_distance_init()){
+        return false;
+    }
+
+    if (!downward_distance_init()){
+        return false;
+    }
+    return true;
+}
+
+
 /**
- * Method to return the distance reading from the forward ultrasonic sensor 
+ * Method to return the distance reading from the forward TOF sensor 
 */
 int forwardDistanceData() {
-    //TODO
+    uint16_t range = 0;
+    vl53l0x_read_range_single(&range,IIC0);
+    return range;
 }
 
 /**
  * Method to return distance between ground and robot in order to determine height of block 
 */
 int downwardDistanceData() {
-    //TODO
+    uint16_t range = 0;
+    vl53l0x_read_range_single(&range,IIC1);
+    return range;
 }
 
 /**
  *  Method to return the color of the block 
 */
 char colorSensor() {
-    //TODO
+    char color = 'u'; //u for unknown
+    return color;
 }
-
-//struct IR sensor storing the color for all three IR sensors
-struct IRSensors {
-    int sensor1Val; 
-    int sensor2Val;
-    int sensor3Val;
-};
 
 /**
  * measure the values for all three IR sensors
 */
 struct IRSensors measureIRData() {
-    //TODO
+    struct IRSensors IRData;
+    IRData.sensor1Val = IR_read(ADC5);
+    IRData.sensor2Val = IR_read(ADC4);
+    IRData.sensor3Val = IR_read(ADC3);
+    IRData.sensor4Val = IR_read(ADC2);
+    return IRData;
 }
 
 /**
@@ -40,7 +74,7 @@ struct IRSensors measureIRData() {
 */
 void moveRobotForwardOrBackward(int direction) {
     //TODO
-    if (direction = 0) {
+    if (direction == 0) {
         rotateRobot(2);
         moveRobotForwardOrBackward(1);
     } else {
