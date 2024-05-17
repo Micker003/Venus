@@ -8,6 +8,7 @@
 #define MAX_SIZE 100
 
 //<<CHECK TODO ON LINE 277 TO PICK UP ON THE NAVIGATION METHOD>>
+//ensure that the robot does not cross over boundary
 
 
 int IRthreshold = 100;  //threshold for which IR sensor data is determined to be color black
@@ -244,7 +245,7 @@ void robotNavigation(struct coordinates current, struct coordinates destination)
             switch (upCheck)
             {
             case 0:
-                avoidCollisions(1, current, );  //if a collision is detected then avoid collision method is called
+                avoidCollisions(1, current, xDistanceToCover, yDistanceToCover);  //if a collision is detected then avoid collision method is called
                 break;
             case 1:
                 moveRobot(current, 0);  //if the coordinate is empty then we move the robot up. 
@@ -262,7 +263,7 @@ void robotNavigation(struct coordinates current, struct coordinates destination)
             switch (downCheck)
             {
             case 0:
-                avoidCollisions();
+                avoidCollisions(1, current, xDistanceToCover, yDistanceToCover);
                 break;
             case 1:
                 moveRobot(current, 3); //if the coordinate is empty move the robot down
@@ -272,8 +273,38 @@ void robotNavigation(struct coordinates current, struct coordinates destination)
                 break;
             }
         }
-    } else {
-        //case for when y coordinate is already the same
+    } 
+
+    if (xDistanceToCover > 0) {
+        while (current.x != destination.x) {
+            struct coordinates rightCoor = current; 
+            rightCoor.x = current.x + 1;
+            int rightCheck = findObjectAtCoordinate(&list, rightCoor);
+            switch (rightCheck)
+            {
+            case 0:
+                avoidCollisions(0,current,xDistanceToCover, yDistanceToCover);
+                break;
+            case 1:
+                moveRobot(current, 1);
+                break;
+            }
+        }
+    } else if (xDistanceToCover < 0) {
+        while (current.x != destination.x) {
+            struct coordinates leftCoor = current; 
+            leftCoor.x = current.x - 1;
+            int leftCheck = findObjectAtCoordinate(&list, leftCoor);
+            switch (leftCheck)
+            {
+            case 0:
+                avoidCollisions(0,current,xDistanceToCover, yDistanceToCover);
+                break;
+            case 1:
+                moveRobot(current, 2);
+                break;
+            }
+        }
     }
     
    
@@ -288,7 +319,7 @@ void robotNavigation(struct coordinates current, struct coordinates destination)
  * axis of movement indicates whether the robot is moving on the x axis or the y axis, x -> 0, y -> 1
 */
 void avoidCollisions(int axisOfMovement, struct coordinates current, int xDistanceToCover, int yDistanceToCover) {
-    
+    //ensure that when the robot is moving on the x axis that it always returns to the coordinate that it started on 
 }
 
 /**
@@ -330,7 +361,9 @@ int exploreForward(struct coordinates cc, struct Queue q) {
     char propertyAtCoordinate = returnSquareProperty(st);
     be.objectAtLocation = propertyAtCoordinate; // add the value for the object at location to the coordinate before adding to list 
     addElement(&list, be);
-    enqueue(&q, be);
+    if (propertyAtCoordinate = "empty") {
+        enqueue(&q, be);    //coordinate is only enqueued for further exploration if it is empty.
+    }
     return check;
 }
 
@@ -352,7 +385,9 @@ int exploreRight(struct coordinates cc, struct Queue q) {
     char propertyAtCoordinate = returnSquareProperty(st);
     be.objectAtLocation = propertyAtCoordinate;
     addElement(&list, be);
-    enqueue(&q, be);
+   if (propertyAtCoordinate = "empty") {
+        enqueue(&q, be);
+    }
     rotateRobot(1);
     return check;
 }
@@ -374,8 +409,10 @@ int exploreLeft(struct coordinates cc, struct Queue q) {
     struct squareType st = checkSquare();
     char propertyAtCoordinate = returnSquareProperty(st);
     be.objectAtLocation = propertyAtCoordinate;
+    if (propertyAtCoordinate = "empty") {
+        enqueue(&q, be);
+    }
     addElement(&list, be);
-    enqueue(&q, be);
     rotateRobot(0);
     return check;
 }
@@ -398,7 +435,9 @@ int exploreBehind(struct coordinates cc, struct Queue q) {
     char propertyAtCoordinate = returnSquareProperty(st);
     be.objectAtLocation = propertyAtCoordinate;
     addElement(&list, be);
-    enqueue(&q, be);
+    if (propertyAtCoordinate = "empty") {
+        enqueue(&q, be);
+    }
     rotateRobot(2);
     return check;
 }
