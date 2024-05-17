@@ -159,6 +159,7 @@ void main() {
 
 /**
  * moveRobot method controls the moving of the robot.
+ * 0 -> forward, 1 -> Right, 2 -> left, 3 -> backwards
 */
 struct coordinates moveRobot(struct coordinates inputCoordinate, int dirSelVal) {
     //dirSelVal determines the direction that the robot needs to move in 
@@ -233,52 +234,62 @@ void robotNavigation(struct coordinates current, struct coordinates destination)
     //forming a pyramid of sorts, so it is always possible to navigate down and to the right or left.
     int yDistanceToCover = destination.y - current.y;
     int xDistanceToCover = destination.x - current.x;
-    
-    while (!(current.y == destination.y)) {
-        struct coordinates fwd = current; 
-        fwd.y = current.y+1;
-        int fcheck = findObjectAtCoordinate(&list, fwd);
-        struct coordinates bwd = current; 
-        bwd.y = current.y-1;
-        int bcheck = findObjectAtCoordinate(&list, bwd);
-        if (yDistanceToCover > 0 && fcheck == 1) {
-            //if y distance to cover is positive then we must move up 
-            current = moveRobot(current, 0);
-    }  else if (yDistanceToCover > 0 && fcheck == 0) {
-            if (xDistanceToCover > 0) {
-                current = moveRobot(current, 1); //if the forward coordinate isn't empty we move one to the right
-            } else {
-                current = moveRobot(current, 2); //if it cannot go right then move to the left. 
-            }
-            
-    }  
-    
-        if (yDistanceToCover < 0 && bcheck == 1) {
-            //if y distance to cover is negative then we must move down 
-            current = moveRobot(current, 3);
-        } else if (yDistanceToCover < 0 && bcheck == 0) {
-            if (xDistanceToCover > 0) {
-                current = moveRobot(current, 1); //if the forward coordinate isn't empty we move one to the right
-            } else {
-                current = moveRobot(current, 2); //if it cannot go right then move to the left. 
+
+
+    if (yDistanceToCover > 0 ) {
+        while (current.y != destination.y) {
+            struct coordinates upCoor = current; 
+            upCoor.y = current.y + 1;
+            int upCheck = findObjectAtCoordinate(&list, upCoor);
+            switch (upCheck)
+            {
+            case 0:
+                avoidCollisions(1, current, );  //if a collision is detected then avoid collision method is called
+                break;
+            case 1:
+                moveRobot(current, 0);  //if the coordinate is empty then we move the robot up. 
+                current.y = current.y + 1; //increment the y coordinate
+                break;    
+            default:
+                break;
             }
         }
+    } else if (yDistanceToCover < 0) {
+        while (current.y != destination.y) {
+            struct coordinates downCoor = current;
+            downCoor.y = current.y - 1;
+            int downCheck = findObjectAtCoordinate(&list, downCoor);
+            switch (downCheck)
+            {
+            case 0:
+                avoidCollisions();
+                break;
+            case 1:
+                moveRobot(current, 3); //if the coordinate is empty move the robot down
+                current.y = current.y - 1; //decrement the y coordinate b 1
+                break;
+            default:
+                break;
+            }
+        }
+    } else {
+        //case for when y coordinate is already the same
     }
     
-    while (!(current.x == destination.x)) {
-        if (xDistanceToCover > 0) {
-        //if x distance to cover is positive we must move to the right
-        current = moveRobot(current,1);
-    } else if (xDistanceToCover < 0) {
-        //if x distance to cover is negative we must move to the left
-        current = moveRobot(current, 2);
-    }
-    }
+   
     //TODO:make sure that the robot moves to the right or left to reach the target x coordinate without hitting an object. 
     //TODO: refactor the code in order to reduce complexity of robotNavigation method. 
     
 }
 
+
+/**
+ * method to enable robot to avoid collisions with objects on the map 
+ * axis of movement indicates whether the robot is moving on the x axis or the y axis, x -> 0, y -> 1
+*/
+void avoidCollisions(int axisOfMovement, struct coordinates current, int xDistanceToCover, int yDistanceToCover) {
+    
+}
 
 /**
  * returns if square is free and has been discovered
