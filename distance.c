@@ -64,7 +64,7 @@ bool device_is_booted(const iic_index_t iic){
     uint8_t device_id = 0;
      
     if (!iic_read_register	(iic, IIC_DEVICE_ADDRESS, REG_IDENTIFICATION_MODEL_ID, &device_id, 1)) {
-        printf("Device ID: %d\n",device_id);
+      //  printf("Device ID: %d\n",device_id);
         return true;
     }
     return device_id == VL53L0X_EXPECTED_DEVICE_ID;
@@ -402,17 +402,3 @@ bool vl53l0x_read_range_single(uint16_t *range, const iic_index_t iic)
 
     return true;
 }
-
-
-int forwardDistanceData(){
-    uint16_t range = 0;
-    vl53l0x_read_range_single(&range,IIC0);
-    return range;
-}
-
-int downwardDistanceData(){
-    uint16_t range = 0;
-    vl53l0x_read_range_single(&range,IIC1);
-    return range;
-}
-
