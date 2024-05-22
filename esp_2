@@ -10,20 +10,34 @@ struct coordinates {
     char* objectAtLocation;
 };
 
-struct squareType {
-    //blockType can be "small" || "big"
-    char blockType; 
-    //block color can be any string corresponding to the RBG color returned by embedded software method
-    char blockColor; 
-    //parity value, 1 is true and 0 is false
+struct squareType { // Prototype, might not end up being used
+    //blockType: 0 is not a block, 1 is a smol block, 2 is a big block
+    int blockType;
+    //block color: 1 is black, 2 is blue, 3 is green, 4 is red, 5 is white. Will not be checked if not a block, could be 0
+    int blockColor;
+    //parity value
     int cliffPresent;
     //parity value for hole
     int holePresent;
     //parity value for boundary 
-    int boundaryPresent; 
+    int boundaryPresent;
+    //Direction of the boundary: 0 is north/top, 1 is south/bottom, 2 is west/left, 3 is east/right. Will not be checked if no boundary
+    int boundarySide;
 };
-
-
+//
+//int getID(squareType square){
+//    int ID = 0;
+//    switch (square.blockType) {
+//        case 0:
+//            return 0;
+//        case 1:
+//            return 1;
+//        case 2:
+//            return 2;
+//        other:
+//            return 100; // error
+//    }
+//}
 
 // char returnSingleCharFromSquareProperty(char* c){
 //     if(c == "Boundary"){
