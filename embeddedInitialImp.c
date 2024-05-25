@@ -5,28 +5,100 @@
 #include "IR_sensor.h"
 #include "embeddedInitialImp.h"
 
+
+
+int multipleInit(vl53x *sensorA, vl53x *sensorB){
+	switchbox_set_pin(IO_AR_SCL, SWB_IIC0_SCL);
+	switchbox_set_pin(IO_AR_SDA, SWB_IIC0_SDA);
+	iic_init(IIC0);
+		int i;
+	//Setup Sensor A
+	printf("Initialising Sensor A:\n");
+
+	//Change the Address of the VL53L0X
+	uint8_t addrA = 0x69;
+	i = tofSetAddress(IIC0, 0x29, addrA);
+	printf("---Address Change: ");
+	if(i != 0)
+	{
+		printf("Fail\n");
+		return 1;
+	}
+	printf("Succes\n");
+	
+	i = tofPing(IIC0, addrA);
+	printf("---Sensor Ping: ");
+	if(i != 0)
+	{
+		printf("Fail\n");
+		return 1;
+	}
+	printf("Succes\n");
+
+	//Create a sensor struct
+	//vl53x sensorA;
+
+	//Initialize the sensor
+
+	i = tofInit(sensorA, IIC0, addrA, 0);
+	if (i != 0)
+	{
+		printf("---Init: Fail\n");
+		return 1;
+	}
+
+	uint8_t model, revision;
+
+	tofGetModel(sensorA, &model, &revision);
+	printf("---Model ID - %d\n", model);
+	printf("---Revision ID - %d\n", revision);
+	printf("---Init: Succes\n");
+	fflush(NULL);
+
+	printf("\n\nNow Power Sensor B!!\nPress \"Enter\" to continue...\n");
+	getchar();
+
+	//Setup Sensor B
+	printf("Initialising Sensor B:\n");
+
+	//Use the base addr of 0x29 for sensor B
+	//It no longer conflicts with sensor A.
+	uint8_t addrB = 0x29;	
+	i = tofPing(IIC0, addrB);
+	printf("---Sensor Ping: ");
+	if(i != 0)
+	{
+		printf("Fail\n");
+		return 1;
+	}
+	printf("Succes\n");
+
+
+	//Initialize the sensor
+
+	i = tofInit(sensorB, IIC0, addrB, 0);
+	if (i != 0)
+	{
+		printf("---Init: Fail\n");
+		return 1;
+	}
+
+	tofGetModel(sensorB, &model, &revision);
+	printf("---Model ID - %d\n", model);
+	printf("---Revision ID - %d\n", revision);
+	printf("---Init: Succes\n");
+	fflush(NULL); //Get some output even if the distance readings hang
+	printf("\n");
+	return EXIT_SUCCESS;
+}
+
+vl53x sensorA; 
+vl53x sensorB;
+
 //Method to initialize all sensors before usage
 bool embeddedInit(){
-    
+	multipleInit(&sensorA, &sensorB);
     IR_init();
-
-    switchbox_set_pin(IO_AR4, SWB_IIC0_SCL);
-    switchbox_set_pin(IO_AR5 , SWB_IIC0_SDA);
-    switchbox_set_pin(IO_AR_SCL , SWB_IIC1_SCL);
-    switchbox_set_pin(IO_AR_SDA , SWB_IIC1_SDA);
-
-    iic_init(IIC1);
-    iic_reset(IIC1);
-    iic_init(IIC0);
-    iic_reset(IIC0);
-
-    if (!forward_distance_init()){
-        return false;
-    }
-
-    if (!downward_distance_init()){
-        return false;
-    }
     return true;
 }
 
@@ -35,20 +107,21 @@ bool embeddedInit(){
  * Method to return the distance reading from the forward TOF sensor 
 */
 int forwardDistanceData() {
-    uint16_t range = 0;
-    vl53l0x_read_range_single(&range,IIC0);
-    return range;
+    uint32_t iDistance;
+	iDistance = tofReadDistance(&sensorB);
+    printf("Distance Forward: %d\n", iDistance);
+    return iDistance;
 }
-
 /**
  * Method to return distance between ground and robot in order to determine height of block 
 */
-int downwardDistanceData() {
-    uint16_t range = 0;
-    vl53l0x_read_range_single(&range,IIC1);
-    return range;
-}
 
+int downwardDistanceData() {
+    uint32_t iDistance;
+	iDistance = tofReadDistance(&sensorA);
+    printf("Distance Forward: %d\n", iDistance);
+    return iDistance;
+}
 /**
  *  Method to return the color of the block 
 */
