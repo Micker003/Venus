@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-
+h
 
 #define GRID_WIDTH 20
 #define GRID_HEIGHt 20
