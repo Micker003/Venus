@@ -143,9 +143,12 @@ void main() {
     //create the initial coordinate which can be assumed as empty
     currentCoordinate.x = 0;
     currentCoordinate.y = 0;
+
     currentCoordinate.objectAtLocation = "Empty";
     
+
     initArrayList(&list);
+    printf(list->array[0].objectAtLocation);
     addElement(&list, currentCoordinate);
     BFS(currentCoordinate);
 
@@ -171,17 +174,20 @@ struct coordinates moveRobot(struct coordinates inputCoordinate, int dirSelVal) 
         case 0: //move the robot one step forward
             c.x = inputCoordinate.x;
             c.y = inputCoordinate.y + 1;
-            moveRobotForwardOrBackward(1);            
+            c.objectAtLocation = inputCoordinate.objectAtLocation;
+            moveRobotForwardOrBackward(1); 
             break;
         case 1: //move the robot one step to the right
             c.x = inputCoordinate.x + 1;
             c.y = inputCoordinate.y;
+            c.objectAtLocation = inputCoordinate.objectAtLocation;
             rotateRobot(0);
             moveRobotForwardOrBackward(1);
             break;
         case 2: //move the robot one step to the left
             c.x = inputCoordinate.x - 1;
             c.y = inputCoordinate.y;
+            c.objectAtLocation = inputCoordinate.objectAtLocation;
             rotateRobot(1);
             moveRobotForwardOrBackward(1);
             break;
@@ -189,6 +195,7 @@ struct coordinates moveRobot(struct coordinates inputCoordinate, int dirSelVal) 
         case 3: //move the robot one step backwards
             c.x = inputCoordinate.x;
             c.y = inputCoordinate.y - 1;
+            c.objectAtLocation = inputCoordinate.objectAtLocation;
             moveRobotForwardOrBackward(0);
             break;
     
@@ -246,8 +253,7 @@ void robotNavigation(struct coordinates current, struct coordinates destination)
                 avoidCollisions(1, current, destination, xDistanceToCover, yDistanceToCover);  //if a collision is detected then avoid collision method is called
                 break;
             case 1:
-                moveRobot(current, 0);  //if the coordinate is empty then we move the robot up. 
-                current.y = current.y + 1; //increment the y coordinate
+                current = moveRobot(current, 0);  //if the coordinate is empty then we move the robot up. 
                 break;    
             default:
                 break;
@@ -264,8 +270,7 @@ void robotNavigation(struct coordinates current, struct coordinates destination)
                 avoidCollisions(1, current, destination, xDistanceToCover, yDistanceToCover);
                 break;
             case 1:
-                moveRobot(current, 3); //if the coordinate is empty move the robot down
-                current.y = current.y - 1; //decrement the y coordinate b 1
+                current = moveRobot(current, 3); //if the coordinate is empty move the robot down
                 break;
             default:
                 break;
@@ -284,7 +289,7 @@ void robotNavigation(struct coordinates current, struct coordinates destination)
                 avoidCollisions(0,current,destination, xDistanceToCover, yDistanceToCover);
                 break;
             case 1:
-                moveRobot(current, 1);
+                current = moveRobot(current, 1);
                 break;
             }
         }
@@ -299,7 +304,7 @@ void robotNavigation(struct coordinates current, struct coordinates destination)
                 avoidCollisions(0,current, destination, xDistanceToCover, yDistanceToCover);
                 break;
             case 1:
-                moveRobot(current, 2);
+                current = moveRobot(current, 2);
                 break;
             }
         }
@@ -331,21 +336,17 @@ void avoidCollisions(int axisOfMovement, struct coordinates current, struct coor
         int downCheck = findObjectAtCoordinate(&list, downCoor);
 
         if (upCheck = 1) {
-            moveRobot(0);
-            current.y = current.y + 1;
+            current = moveRobot(current, 0);
             robotNavigation(current, target);
         } else if (downCheck = 1) {
-            moveRobot(3);
-            current.y = current.y - 1;
+            current = moveRobot(current, 3);
             robotNavigation(current,target);
         } else {
             //if both sides are blocked then we have recursive call after backtracking by one
             if (xDistanceToCover > 0) {
-                current.x = current.x - 1;
-                moveRobot(2);
+                current = moveRobot(current, 2);
             } else if (xDistanceToCover < 0) {
-                current.x = current.x + 1;
-                moveRobot(1);
+                current = moveRobot(current, 1);
             } 
             int xDistanceToCover = destination.x - current.x;
             avoidCollisions(0, current, target, xDistanceToCover, yDistanceToCover);
@@ -362,21 +363,17 @@ void avoidCollisions(int axisOfMovement, struct coordinates current, struct coor
             int leftCheck = findObjectAtCoordinate(&list, leftCoor);
 
             if (rightCheck = 1) {
-                moveRobot(1);
-                current.x = current.x + 1;
+                current = moveRobot(current, 1);
                 robotNavigation(current, target);
             } else if (leftCheck = 1) {
-                moveRobot(2);
-                current.x = current.x - 1;
+                current = moveRobot(current, 2);
                 robotNavigation(current,target);
             } else {
                 //if both sides are blocked then we have recursive call after backtracking by one
                 if (yDistanceToCover > 0) {
-                    current.y = current.y - 1;
-                    moveRobot(3);
+                    current = moveRobot(current, 3);
                 } else if (yDistanceToCover < 0) {
-                    current.y = current.y + 1;
-                    moveRobot(0);
+                    current = moveRobot(current, 0);
                 }
                 int yDistanceToCover = destination.y - current.y;
                 avoidCollisions(1, current, target, xDistanceToCover, yDistanceToCover);
@@ -420,6 +417,7 @@ int exploreForward(struct coordinates cc, struct Queue q) {
     int duplication_check = isInArrayList(&list, be);
     if(duplication_check > 0) {
         check = 1;
+        return check;
     }
     struct squareType st = checkSquare();
     char propertyAtCoordinate = returnSquareProperty(st);
@@ -443,6 +441,7 @@ int exploreRight(struct coordinates cc, struct Queue q) {
     int duplication_check = isInArrayList(&list, be);
     if(duplication_check > 0) {
         check = 1;
+        return check;
     }
     rotateRobot(0);
     struct squareType st = checkSquare();
@@ -468,6 +467,7 @@ int exploreLeft(struct coordinates cc, struct Queue q) {
     int duplication_check = isInArrayList(&list, be);
     if(duplication_check > 0) {
         check = 1;
+        return check;
     }
     rotateRobot(1);
     struct squareType st = checkSquare();
@@ -493,6 +493,7 @@ int exploreBehind(struct coordinates cc, struct Queue q) {
     int duplication_check = isInArrayList(&list, be);
     if(duplication_check > 0) {
         check = 1;
+        return check;
     }
     rotateRobot(2);
     struct squareType st = checkSquare();

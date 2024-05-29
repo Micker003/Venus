@@ -386,6 +386,7 @@ void avoidCollisions(int axisOfMovement, struct coordinates current, struct coor
     }
 }
 
+
 /**
  * returns if square is free and has been discovered
 */
