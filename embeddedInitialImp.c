@@ -152,7 +152,10 @@ void moveRobotForwardOrBackward(int direction) {
         rotateRobot(2);
         moveRobotForwardOrBackward(1);
     } else {
-        //add code here to rotate the robot a certain distance to move the robot forwards.
+        stepper_enable();
+	stepper_set_speed(5000,5000);
+	stepper_steps(800,800);
+	stepper_disable();
     }
 }
 
