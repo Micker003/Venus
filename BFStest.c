@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-#include "embeddedInitialImp.c"
+#include "embeddedImplementationInterface"
 #define initialx 0
 #define initialy 0
 #define MAX_SIZE 100
@@ -132,31 +132,7 @@ struct squareType {
 
 
 
-/**
-* primary control method calling other mehtods in program 
-* @pre nil
-* @post 
-* @return void   
-*/
-void main() {
-    struct coordinates currentCoordinate;
-    //create the initial coordinate which can be assumed as empty
-    currentCoordinate.x = 0;
-    currentCoordinate.y = 0;
 
-    currentCoordinate.objectAtLocation = "Empty";
-    
-
-    initArrayList(&list);
-  
-    addElement(&list, currentCoordinate);
-    BFS(currentCoordinate);
-
-    //send the arraylist to the MQTT server for visualization
-    //TODO
-    //After sending the data this code terminates
-    
-}
 
 
 
@@ -614,5 +590,29 @@ struct squareType checkSquare() {
 
 }
 
+/**
+* primary control method calling other mehtods in program 
+* @pre nil
+* @post 
+* @return void   
+*/
+void main() {
+    struct coordinates currentCoordinate;
+    //create the initial coordinate which can be assumed as empty
+    currentCoordinate.x = 0;
+    currentCoordinate.y = 0;
 
+    currentCoordinate.objectAtLocation = "Empty";
+    
+
+    initArrayList(&list);
+  
+    addElement(&list, currentCoordinate);
+    BFS(currentCoordinate);
+
+    //send the arraylist to the MQTT server for visualization
+    //TODO
+    //After sending the data this code terminates
+    
+}
  
