@@ -148,7 +148,7 @@ void main() {
     
 
     initArrayList(&list);
-    printf(list->array[0].objectAtLocation);
+  
     addElement(&list, currentCoordinate);
     BFS(currentCoordinate);
 
