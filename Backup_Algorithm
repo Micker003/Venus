@@ -2,13 +2,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include <libpynq.h>
-#include "color.c"
 #include "embeddedInitialImp.c"
 
-
-#define GRID_WIDTH 20
-#define GRID_HEIGHt 20
-#define LENGTH 20
 
 typedef struct point{
     int x;
@@ -40,12 +35,11 @@ int  checkforobstacle(int x, int y,int *direction){
     char color;
     int  forward_distance;
     int downward_distance;
-    char color;
     int threshold;
     threshold = measureIRData();
 
     forward_distance = forwardDistanceData();
-    downward_distance = downwardDistanceData;
+    downward_distance = downwardDistanceData();
 
     if((forward_distance<70)||threshold<270||downward_distance<10000){
         //check for the crater
@@ -67,14 +61,16 @@ int  checkforobstacle(int x, int y,int *direction){
         height = 10-(downward_distance/10);
 
         if (height != 0){
-            // send data to visualisation
-            // send coordinates
-            printf("Rock sample detected\n");
-            printf("Robot turned 90 degrees right\n");
+            color = colorSensor();
             stepper_enable();
+            printf("Rock sample detected\n");
+            printf("color is %c\n",color);
+            printf("Robot turned 90 degrees right\n");
             stepper_set_speed(65535,65535);
             stepper_steps(-500,450);
             stepper_disable();
+            // send data to visualisation
+            // send coordinates
             *direction = *direction + 1;
             return 0;
         } 
