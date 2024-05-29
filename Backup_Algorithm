@@ -2,7 +2,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include <libpynq.h>
-#include "embeddedInitialImp.c"
+#include "embeddedInitialImp.h"
+#include <stepper.h>
 
 
 typedef struct point{
@@ -35,16 +36,16 @@ int  checkforobstacle(int x, int y,int *direction){
     char color;
     int  forward_distance;
     int downward_distance;
-    int threshold;
-    threshold = measureIRData();
+    int threshold = 268;
+    struct IRSensors IRData = measureIRData();
 
     forward_distance = forwardDistanceData();
     downward_distance = downwardDistanceData();
 
-    if((forward_distance<70)||threshold<270||downward_distance<10000){
+    if((forward_distance<70)||IRData.sensor1Val<threshold||downward_distance<10000){
         //check for the crater
         
-        if (threshold<270){
+        if (IRData.sensor1Val<268){
             // send data
             // send the coordinates
             printf("Robot turned 90 degrees right\n");
@@ -194,8 +195,6 @@ int checklist(int x,int y,point *list){
 
 int main (void){
 
-    
-    
     int checker = 0;
     int check_coordinates = 0;
     point *list = NULL;
@@ -203,7 +202,6 @@ int main (void){
     int current_ypoint = 0;
     stepper_init();
     pynq_init();
-    char map[20][20];
     embeddedInit();
     
     list = addtolist(current_xpoint,current_ypoint,list);
