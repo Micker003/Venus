@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-#include "embeddedImplementationInterface"
+#include "embeddedImplementationInterface.c"
 #define initialx 0
 #define initialy 0
 #define MAX_SIZE 100
@@ -12,7 +12,6 @@
 
 
 int IRthreshold = 100;  //threshold for which IR sensor data is determined to be color black
-ArrayList list;         //initialization of arraylist which will store all of the coordinates as well as their types
 
 //create a struct called coordinates which can maintain the location of the robot
 struct coordinates {
@@ -28,6 +27,7 @@ typedef struct {
     size_t capacity;
 } ArrayList;
 
+ArrayList list;         //initialization of arraylist which will store all of the coordinates as well as their types
 
 // Define the struct for the queue
 typedef struct Queue {
@@ -179,32 +179,92 @@ struct coordinates moveRobot(struct coordinates inputCoordinate, int dirSelVal) 
     return c;
 }
 
-/**
- * BFS search algorithm to search to explore the entire grid
-*/
-void BFS(struct coordinates currentCoordinate) {
-    int duplication_check = 0;
-    struct coordinates beingExplored = currentCoordinate; 
-    struct coordinates navigateTo;
-    Queue q;            //create a BFS queue
-    initQueue(&q);      //initialize the BFS queue using the initQueue() method
-    //while loop which runs until a duplicate is found or until the time limit has been reached
-    while (duplication_check < 1) {
 
-        //explore all of the squares adjacent to currently occupied square
-        duplication_check = exploreForward(beingExplored, q);
-        duplication_check = duplication_check + exploreRight(beingExplored, q);
-        duplication_check = duplication_check + exploreLeft(beingExplored, q);
-        duplication_check = duplication_check + exploreBehind(beingExplored, q); //if duplication_check > 0 break while loop
-        
-        navigateTo = dequeue(&q);        //deque one of the visited coordinates from the queue and 
-        //add it to a new struct called coordinates
-        robotNavigation(beingExplored, navigateTo);
-        beingExplored = navigateTo; //once the robotNavigation() method has been executed set the robot's beingExplored coordinate to the navigateTo coordinate. 
-      
-        
+
+/**
+ * returns if square is free and has been discovered
+*/
+int findObjectAtCoordinate(ArrayList *list, struct coordinates target) {
+    char objectAtCoordinate;
+    for (size_t i = 0; i < list->size; i++) {
+        if (list->array[i].x == target.x && list->array[i].y == target.y) {
+            objectAtCoordinate = list->array->objectAtLocation;
+        } else {
+            return 0;
+        }
     }
-    main();
+    
+    if (objectAtCoordinate == "Empty") {
+        return 1; 
+    } else {
+        return 0;
+    }
+}
+
+/**
+ * method to enable robot to avoid collisions with objects on the map 
+ * axis of movement indicates whether the robot is moving on the x axis or the y axis, x -> 0, y -> 1
+*/
+void avoidCollisions(int axisOfMovement, struct coordinates current, struct coordinates target, int xDistanceToCover, int yDistanceToCover) {
+    //ensure that when the robot is moving on the x axis that it always returns to the coordinate that it started on 
+    switch (axisOfMovement)
+    {
+    case 0:
+        
+        //collision avoidance when robot is moving on x axis
+        struct coordinates upCoor = current;
+        upCoor.y = current.y + 1;
+        struct coordinates downCoor = current;
+        downCoor.y = current.y - 1;
+        int upCheck = findObjectAtCoordinate(&list, upCoor);
+        int downCheck = findObjectAtCoordinate(&list, downCoor);
+
+        if (upCheck = 1) {
+            current = moveRobot(current, 0);
+            robotNavigation(current, target);
+        } else if (downCheck = 1) {
+            current = moveRobot(current, 3);
+            robotNavigation(current,target);
+        } else {
+            //if both sides are blocked then we have recursive call after backtracking by one
+            if (xDistanceToCover > 0) {
+                current = moveRobot(current, 2);
+            } else if (xDistanceToCover < 0) {
+                current = moveRobot(current, 1);
+            } 
+            int xDistanceToCover = target.x - current.x;
+            avoidCollisions(0, current, target, xDistanceToCover, yDistanceToCover);
+        }
+
+        break;
+    case 1:
+        //collision avoidance when robot is moving on y axis
+            struct coordinates rightCoor = current;
+            rightCoor.x = current.x + 1;
+            struct coordinates leftCoor = current;
+            leftCoor.x = current.x - 1;
+            int rightCheck = findObjectAtCoordinate(&list, rightCoor);
+            int leftCheck = findObjectAtCoordinate(&list, leftCoor);
+
+            if (rightCheck = 1) {
+                current = moveRobot(current, 1);
+                robotNavigation(current, target);
+            } else if (leftCheck = 1) {
+                current = moveRobot(current, 2);
+                robotNavigation(current,target);
+            } else {
+                //if both sides are blocked then we have recursive call after backtracking by one
+                if (yDistanceToCover > 0) {
+                    current = moveRobot(current, 3);
+                } else if (yDistanceToCover < 0) {
+                    current = moveRobot(current, 0);
+                }
+                int yDistanceToCover = target.y - current.y;
+                avoidCollisions(1, current, target, xDistanceToCover, yDistanceToCover);
+            }
+        break;
+
+    }
 }
 
 /**
@@ -293,91 +353,18 @@ void robotNavigation(struct coordinates current, struct coordinates destination)
 }
 
 
-/**
- * method to enable robot to avoid collisions with objects on the map 
- * axis of movement indicates whether the robot is moving on the x axis or the y axis, x -> 0, y -> 1
-*/
-void avoidCollisions(int axisOfMovement, struct coordinates current, struct coordinates target, int xDistanceToCover, int yDistanceToCover) {
-    //ensure that when the robot is moving on the x axis that it always returns to the coordinate that it started on 
-    switch (axisOfMovement)
-    {
-    case 0:
-        
-        //collision avoidance when robot is moving on x axis
-        struct coordinates upCoor = current;
-        upCoor.y = current.y + 1;
-        struct coordinates downCoor = current;
-        downCoor.y = current.y - 1;
-        int upCheck = findObjectAtCoordinate(&list, upCoor);
-        int downCheck = findObjectAtCoordinate(&list, downCoor);
 
-        if (upCheck = 1) {
-            current = moveRobot(current, 0);
-            robotNavigation(current, target);
-        } else if (downCheck = 1) {
-            current = moveRobot(current, 3);
-            robotNavigation(current,target);
-        } else {
-            //if both sides are blocked then we have recursive call after backtracking by one
-            if (xDistanceToCover > 0) {
-                current = moveRobot(current, 2);
-            } else if (xDistanceToCover < 0) {
-                current = moveRobot(current, 1);
-            } 
-            int xDistanceToCover = destination.x - current.x;
-            avoidCollisions(0, current, target, xDistanceToCover, yDistanceToCover);
-        }
 
-        break;
-    case 1:
-        //collision avoidance when robot is moving on y axis
-            struct coordinates rightCoor = current;
-            rightCoor.x = current.x + 1;
-            struct coordinates leftCoor = current;
-            leftCoor.x = current.x - 1;
-            int rightCheck = findObjectAtCoordinate(&list, rightCoor);
-            int leftCheck = findObjectAtCoordinate(&list, leftCoor);
 
-            if (rightCheck = 1) {
-                current = moveRobot(current, 1);
-                robotNavigation(current, target);
-            } else if (leftCheck = 1) {
-                current = moveRobot(current, 2);
-                robotNavigation(current,target);
-            } else {
-                //if both sides are blocked then we have recursive call after backtracking by one
-                if (yDistanceToCover > 0) {
-                    current = moveRobot(current, 3);
-                } else if (yDistanceToCover < 0) {
-                    current = moveRobot(current, 0);
-                }
-                int yDistanceToCover = destination.y - current.y;
-                avoidCollisions(1, current, target, xDistanceToCover, yDistanceToCover);
-            }
-        break;
 
-    }
-}
 
-/**
- * returns if square is free and has been discovered
-*/
-int findObjectAtCoordinate(ArrayList *list, struct coordinates target) {
-    char objectAtCoordinate;
-    for (size_t i = 0; i < list->size; i++) {
-        if (list->array[i].x == target.x && list->array[i].y == target.y) {
-            objectAtCoordinate = list->array->objectAtLocation;
-        } else {
-            return 0;
-        }
-    }
-    
-    if (objectAtCoordinate == "Empty") {
-        return 1; 
-    } else {
-        return 0;
-    }
-}
+
+
+
+
+
+
+
 
 
 /**
@@ -615,4 +602,31 @@ void main() {
     //After sending the data this code terminates
     
 }
- 
+
+ /**
+ * BFS search algorithm to search to explore the entire grid
+*/
+void BFS(struct coordinates currentCoordinate) {
+    int duplication_check = 0;
+    struct coordinates beingExplored = currentCoordinate; 
+    struct coordinates navigateTo;
+    Queue q;            //create a BFS queue
+    initQueue(&q);      //initialize the BFS queue using the initQueue() method
+    //while loop which runs until a duplicate is found or until the time limit has been reached
+    while (duplication_check < 1) {
+
+        //explore all of the squares adjacent to currently occupied square
+        duplication_check = exploreForward(beingExplored, q);
+        duplication_check = duplication_check + exploreRight(beingExplored, q);
+        duplication_check = duplication_check + exploreLeft(beingExplored, q);
+        duplication_check = duplication_check + exploreBehind(beingExplored, q); //if duplication_check > 0 break while loop
+        
+        navigateTo = dequeue(&q);        //deque one of the visited coordinates from the queue and 
+        //add it to a new struct called coordinates
+        robotNavigation(beingExplored, navigateTo);
+        beingExplored = navigateTo; //once the robotNavigation() method has been executed set the robot's beingExplored coordinate to the navigateTo coordinate. 
+      
+        
+    }
+    main();
+}
