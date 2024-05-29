@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <libpynq.h>
 #include "color.c"
-#include "all_sensors_test"
+#include "embeddedInitialImp.c"
 
 
 #define GRID_WIDTH 20
@@ -30,76 +30,69 @@ typedef struct{;
     int y;
 }Hill;
 
-int distancesensor(
-
-    // under work
-){
-
-
-
-}
-
-
-int colorsensor(){
-    //under work 
-
-}
-
-
 
 int  checkforobstacle(int x, int y,int *direction){
     // check if there's any obstacle ahead
     // using the distance sensors, check for the height of the obstacle
     // if less than 30 cm find the color of the bot using the color sensor
 
-    char cmd;
-    char cmd3;
-    char cmd2;
     int height;
     char color;
-    
-    //return 0 if theres obstacle else return 1
+    int  forward_distance;
+    int downward_distance;
+    char color;
+    int threshold;
+    threshold = measureIRData();
 
-    printf("Is there obstacle ahead?\n ");
-    scanf(" %c",&cmd);
+    forward_distance = forwardDistanceData();
+    downward_distance = downwardDistanceData;
 
-    if(cmd == 'y'){
+    if((forward_distance<70)||threshold<270||downward_distance<10000){
         //check for the crater
-        printf("Crater/border ahead?\n");
-        scanf(" %c", &cmd3);
-        if (cmd3 == 'y'){
+        
+        if (threshold<270){
             // send data
             // send the coordinates
             printf("Robot turned 90 degrees right\n");
+            stepper_enable();
+            stepper_set_speed(65535,65535);
+            stepper_steps(-500,450);
+            stepper_disable();
             *direction = *direction + 1;
             return 0;
         }
-        printf("height of the object in cm?\n");
-        scanf(" %d", &height);
-        if ( height >= 30){
-            printf("HILL detected\n");
-            // here we can send the data to the visualisation
-            // send coordinates x and y
-        }
-        else{
-            printf("Color of the sample\n");
+
+        // height from the sensor to the ground =  10 cm
+        // therefore the height of the block 10-downward_distance
+        height = 10-(downward_distance/10);
+
+        if (height != 0){
             // send data to visualisation
             // send coordinates
-            scanf(" %c", &color);
-        }
+            printf("Rock sample detected\n");
+            printf("Robot turned 90 degrees right\n");
+            stepper_enable();
+            stepper_set_speed(65535,65535);
+            stepper_steps(-500,450);
+            stepper_disable();
+            *direction = *direction + 1;
+            return 0;
+        } 
+    else{
+        printf("HILL detected");
+        // send data to visualisation
+        // send coordinates
         printf("Robot turned 90 degrees right\n");
+        stepper_enable();
+        stepper_set_speed(65535,65535);
+        stepper_steps(-500,450);
+        stepper_disable();
         *direction = *direction + 1;
         return 0;
-
-        
-    } 
-    else{
-
-        printf("Empty Space\n");
-        return 1;
-        
+        }
     }
-    
+    printf("Empty Space\n");
+    return 1;
 }
 
 void move(int *xpoint, int *ypoint, int direction){
@@ -204,6 +197,7 @@ int checklist(int x,int y,point *list){
 
 
 int main (void){
+
     
     
     int checker = 0;
@@ -214,6 +208,7 @@ int main (void){
     stepper_init();
     pynq_init();
     char map[20][20];
+    embeddedInit();
     
     list = addtolist(current_xpoint,current_ypoint,list);
     
@@ -232,26 +227,13 @@ int main (void){
                 stepper_set_speed(65535,65535);
                 stepper_steps(-500,450);
                 direction = direction + 1;
+                stepper_disable();
              }
             move(&current_xpoint,&current_ypoint,direction);
             list = addtolist(current_xpoint,current_ypoint,list);
              
         }
         printf("Current position %d %d\n",current_xpoint,current_ypoint);
-        for(int i=0;i<19;i++){
-            if(i == 9){
-                for(int k = 0;k<45;k++){
-                    printf("-");
-                }
-                printf("\n");
-            }
-            else{
-                for(int j = 0; j<20;j++){
-                printf(" ");
-                }
-                printf("|\n");
-            }
-        }
         
   
 }
