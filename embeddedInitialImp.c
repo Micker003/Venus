@@ -4,6 +4,7 @@
 #include "distance.h"
 #include "IR_sensor.h"
 #include "embeddedInitialImp.h"
+#include <libpynq.h>
 
 
 
@@ -163,16 +164,28 @@ void rotateRobot(int direction) {
     switch(d) {
         case 0:
         //rotate right by 90 degrees
+	stepper_enable();
+	stepper_set_speed(50000,50000);
+	stepper_steps(-500,450);
+	stepper_disable();
         //TODO
         break;
         
         case 1:
         //rotate left by 90 degrees
+	stepper_enable();
+	stepper_set_speed(50000,50000);
+	stepper_steps(500,-450);
+	stepper_disable();
         //TODO
         break;
 
         case 2:
         //rotate robot 180 degrees (backwards)
+	stepper_enable();
+	stepper_set_speed(50000,50000);
+	stepper_steps(1000,-1000);
+	stepper_disable();
         //TODO
         break;
     }
