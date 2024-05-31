@@ -394,11 +394,11 @@ struct squareType checkSquare() {
 
     int blockHeight = downwardDistanceData();
     //height of smallest block assumed to be 3 cm and height of sensor above ground assumed as 6 cm
-    if (blockHeight < 2) {              //checking for big block
+    if (blockHeight < 20) {              //checking for big block
         int color = colorSensor();
         s.blockColor = color; 
         s.blockType = 5;
-    } if (blockHeight < 3 && blockHeight > 2) {
+    } if (blockHeight < 30 && blockHeight > 20) {
         int color = colorSensor();
         s.blockColor = color; 
         s.blockType = 4;
