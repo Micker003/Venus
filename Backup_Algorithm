@@ -1,11 +1,10 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <libpynq.h>
+#include "embeddedInitialImp.h"
+#include <stepper.h>
 
-
-#define GRID_WIDTH 20
-#define GRID_HEIGHt 20
-#define LENGTH 20
 
 typedef struct point{
     int x;
@@ -27,80 +26,81 @@ typedef struct{;
     int y;
 }Hill;
 
-int distancesensor(
-
-    // under work
-){
-
-
-
-}
-
-
-int colorsensor(){
-    //under work 
-
-}
-
-
 
 int  checkforobstacle(int x, int y,int *direction){
     // check if there's any obstacle ahead
     // using the distance sensors, check for the height of the obstacle
     // if less than 30 cm find the color of the bot using the color sensor
 
-    char cmd;
-    char cmd3;
-    char cmd2;
     int height;
     char color;
-    
-    //return 0 if theres obstacle else return 1
+    int  forward_distance;
+    int downward_distance;
+    int threshold = 268;
+    struct IRSensors IRData = measureIRData();
 
-    printf("Is there obstacle ahead?\n ");
-    scanf(" %c",&cmd);
+    forward_distance = forwardDistanceData();
+    downward_distance = downwardDistanceData();
 
-    if(cmd == 'y'){
+    if((forward_distance<70)||IRData.sensor1Val<threshold||downward_distance<10000){
         //check for the crater
-        printf("Crater/border ahead?\n");
-        scanf(" %c", &cmd3);
-        if (cmd3 == 'y'){
+        
+        if (IRData.sensor1Val<268||IRData.sensor2Val<268||IRData.sensor3Val<268||IRData.sensor4Val<268){
             // send data
             // send the coordinates
             printf("Robot turned 90 degrees right\n");
+            stepper_enable();
+            stepper_set_speed(65535,65535);
+            stepper_steps(-500,450);
+            stepper_disable();
+            sleep_msec(1000);
             *direction = *direction + 1;
             return 0;
         }
-        printf("height of the object in cm?\n");
-        scanf(" %d", &height);
-        if ( height >= 30){
-            printf("HILL detected\n");
-            // here we can send the data to the visualisation
-            // send coordinates x and y
-        }
-        else{
-            printf("Color of the sample\n");
+
+        // height from the sensor to the ground =  10 cm
+        // therefore the height of the block 10-downward_distance
+        height = 10-(downward_distance/10);
+
+        if (height != 0){
+            color = colorSensor();
+            stepper_enable();
+            printf("Rock sample detected\n");
+            printf("color is %c\n",color);
+            printf("Robot turned 90 degrees right\n");
+            stepper_set_speed(65535,65535);
+            stepper_steps(-500,450);
+            stepper_disable();
+            sleep_msec(1000);
             // send data to visualisation
             // send coordinates
-            scanf(" %c", &color);
-        }
+            *direction = *direction + 1;
+            return 0;
+        } 
+    else{
+        printf("HILL detected");
+        // send data to visualisation
+        // send coordinates
         printf("Robot turned 90 degrees right\n");
+        stepper_enable();
+        stepper_set_speed(65535,65535);
+        stepper_disable();
+        sleep_msec(1000);
         *direction = *direction + 1;
         return 0;
-
-        
-    } 
-    else{
-
-        printf("Empty Space\n");
-        return 1;
-        
+        }
     }
-    
+    printf("Empty Space\n");
+    return 1;
 }
 
 void move(int *xpoint, int *ypoint, int direction){
 
+    stepper_enable();
+    stepper_set_speed(20000,20000);
+    stepper_steps(500,500);
+    stepper_disable();
+    sleep_msec(1000);
     if (direction == 0){
         *ypoint = *ypoint + 1;
         return;
@@ -193,25 +193,69 @@ int checklist(int x,int y,point *list){
     }
     return 0;
 }
+
+int double_check_list(point *list){
+// checks if all the points in the list repeats twice 
+
+
+    int count = 0;
+    if (list == NULL){
+        return 0;
+    }
+
+    int hash[100][100] = {0};
+    point *temp = list;
+    else{
+
+        while(temp != NULL){
+            hash[temp->x][temp->y]++;
+            temp = temp->next;
+        }
+        temp = list;
+
+        while(temp != NULL){
+            if(hash[temp->x][temp->y]<2){
+                return 0;
+            }
+            temp = temp->next;
+        }
+
+        return 1;
+    }
+    	
+}
+
+void printlist(point *list){
+    point *current = list;
+
+    printf("Points in the list");
+    while(current != NULL){
+        printf("(%d,%d)\n",current->x,current->y);
+        current = current->next;
+    }
+}
+
  
 
 
 int main (void){
-    
-    
+
     int checker = 0;
     int check_coordinates = 0;
     point *list = NULL;
     int current_xpoint = 0;
     int current_ypoint = 0;
-    char map[20][20];
+    stepper_init();
+    pynq_init();
+    embeddedInit();
     
     list = addtolist(current_xpoint,current_ypoint,list);
+    int valid = double_check_list(list);
     
     int direction = 0; 
     printf(" start position is %d %d\n",current_xpoint,current_ypoint);
 
-    while(1){
+    while(valid == 0){
         checker = checkforobstacle(current_xpoint,current_ypoint, &direction);
         if(checker == 1){
             if(list != NULL){
@@ -219,31 +263,26 @@ int main (void){
              }
              if(check_coordinates == 1){
                 //Robot turns 90 degrees to the right
+                stepper_enable();
+                stepper_set_speed(65535,65535);
+                stepper_steps(-500,450);
                 direction = direction + 1;
+                stepper_disable();
+                sleep_msec(1000);
              }
             move(&current_xpoint,&current_ypoint,direction);
             list = addtolist(current_xpoint,current_ypoint,list);
              
         }
         printf("Current position %d %d\n",current_xpoint,current_ypoint);
-        for(int i=0;i<19;i++){
-            if(i == 9){
-                for(int k = 0;k<45;k++){
-                    printf("-");
-                }
-                printf("\n");
-            }
-            else{
-                for(int j = 0; j<20;j++){
-                printf(" ");
-                }
-                printf("|\n");
-            }
-        }
+
+        printlist(list);
         
   
 }
 
 return 0;
+stepper_destroy();
+pynq_destroy();
 
 }
