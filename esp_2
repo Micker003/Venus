@@ -70,31 +70,46 @@ void send_message(char* message){
     }
 }
 
-void send_location_robot(struct coordinates coordinates){
-    // Convert integer to string
-    int messageID = 0;
-    char x[12] = "";
-    char y[12]= "";
-    char ID[2] = "";
-    sprintf(x, "%d", coordinates.x);
-    sprintf(y, "%d", coordinates.y);
-    sprintf(ID, "%d", messageID);
+char* glue(int ID, int x, int y) {
+    char x_c[12] = "";
+    char y_c[12] = "";
+    char ID_C[12] = ""; // Increase the size to handle more than single-digit IDs
 
-    char output[256] = "";
-    strcat(output, ID);
-    strcat(output, ",");
-    strcat(output, x);
-    strcat(output, ",");
-    strcat(output, y);
-    
-    // coordinates are stored with 7 digits
-    // while(sizeof(x) < 6){
-    //     x = '0' + x;
-    // }
-    // while(sizeof(y) < 6){
-    //     y = '0' + y;
-    // }
-    //char* c = x + y;
+    sprintf(x_c, "%d", x);
+    sprintf(y_c, "%d", y);
+    sprintf(ID_C, "%d", ID);
+
+    // Allocate enough memory for the resulting string
+    char *result = (char *)malloc(strlen(ID_C) + strlen(x_c) + strlen(y_c) + 3); // +3 for 2 commas and null terminator
+    if (result == NULL) {
+        // Handle memory allocation failure
+        return NULL;
+    }
+
+    // Construct the resulting string
+    strcpy(result, ID_C);
+    strcat(result, ",");
+    strcat(result, x_c);
+    strcat(result, ",");
+    strcat(result, y_c);
+
+    return result;
+}
+
+void send_location_object(struct coordinates coordinates, struct squareType squareType){
+    int messageID = 1;
+
+    char* output = glue(messageID, coordinates.x, coordinates.y);
+  
+    printf("Message: %s\n", output);
+
+    send_message(output);
+}
+
+void send_location_robot(struct coordinates coordinates){
+    int messageID = 0;
+
+    char* output = glue(messageID, coordinates.x, coordinates.y);
   
     printf("Message: %s\n", output);
 
@@ -127,6 +142,8 @@ int main()
     printf("Boom\n");
 
     send_location_robot(currentCoordinate);
+
+    printf("Done\n");
 
     // algorythm
     
