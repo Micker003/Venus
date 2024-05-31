@@ -45,7 +45,7 @@ int  checkforobstacle(int x, int y,int *direction){
     if((forward_distance<70)||IRData.sensor1Val<threshold||downward_distance<10000){
         //check for the crater
         
-        if (IRData.sensor1Val<268){
+        if (IRData.sensor1Val<268||IRData.sensor2Val<268||IRData.sensor3Val<268||IRData.sensor4Val<268){
             // send data
             // send the coordinates
             printf("Robot turned 90 degrees right\n");
@@ -53,6 +53,7 @@ int  checkforobstacle(int x, int y,int *direction){
             stepper_set_speed(65535,65535);
             stepper_steps(-500,450);
             stepper_disable();
+            sleep_msec(1000);
             *direction = *direction + 1;
             return 0;
         }
@@ -70,6 +71,7 @@ int  checkforobstacle(int x, int y,int *direction){
             stepper_set_speed(65535,65535);
             stepper_steps(-500,450);
             stepper_disable();
+            sleep_msec(1000);
             // send data to visualisation
             // send coordinates
             *direction = *direction + 1;
@@ -82,8 +84,8 @@ int  checkforobstacle(int x, int y,int *direction){
         printf("Robot turned 90 degrees right\n");
         stepper_enable();
         stepper_set_speed(65535,65535);
-        stepper_steps(-500,450);
         stepper_disable();
+        sleep_msec(1000);
         *direction = *direction + 1;
         return 0;
         }
@@ -98,6 +100,7 @@ void move(int *xpoint, int *ypoint, int direction){
     stepper_set_speed(20000,20000);
     stepper_steps(500,500);
     stepper_disable();
+    sleep_msec(1000);
     if (direction == 0){
         *ypoint = *ypoint + 1;
         return;
@@ -190,6 +193,48 @@ int checklist(int x,int y,point *list){
     }
     return 0;
 }
+
+int double_check_list(point *list){
+// checks if all the points in the list repeats twice 
+
+
+    int count = 0;
+    if (list == NULL){
+        return 0;
+    }
+
+    int hash[100][100] = {0};
+    point *temp = list;
+    else{
+
+        while(temp != NULL){
+            hash[temp->x][temp->y]++;
+            temp = temp->next;
+        }
+        temp = list;
+
+        while(temp != NULL){
+            if(hash[temp->x][temp->y]<2){
+                return 0;
+            }
+            temp = temp->next;
+        }
+
+        return 1;
+    }
+    	
+}
+
+void printlist(point *list){
+    point *current = list;
+
+    printf("Points in the list");
+    while(current != NULL){
+        printf("(%d,%d)\n",current->x,current->y);
+        current = current->next;
+    }
+}
+
  
 
 
@@ -205,11 +250,12 @@ int main (void){
     embeddedInit();
     
     list = addtolist(current_xpoint,current_ypoint,list);
+    int valid = double_check_list(list);
     
     int direction = 0; 
     printf(" start position is %d %d\n",current_xpoint,current_ypoint);
 
-    while(1){
+    while(valid == 0){
         checker = checkforobstacle(current_xpoint,current_ypoint, &direction);
         if(checker == 1){
             if(list != NULL){
@@ -222,12 +268,15 @@ int main (void){
                 stepper_steps(-500,450);
                 direction = direction + 1;
                 stepper_disable();
+                sleep_msec(1000);
              }
             move(&current_xpoint,&current_ypoint,direction);
             list = addtolist(current_xpoint,current_ypoint,list);
              
         }
         printf("Current position %d %d\n",current_xpoint,current_ypoint);
+
+        printlist(list);
         
   
 }
