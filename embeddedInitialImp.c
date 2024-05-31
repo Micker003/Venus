@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include "distance.h"
 #include "IR_sensor.h"
+#include "color.h"
 #include "embeddedInitialImp.h"
 #include <libpynq.h>
 
@@ -95,10 +96,13 @@ int multipleInit(vl53x *sensorA, vl53x *sensorB){
 
 vl53x sensorA; 
 vl53x sensorB;
+tcs3472 sensor;
 
 //Method to initialize all sensors before usage
 bool embeddedInit(){
+	int integration_time_ms = 60;
 	multipleInit(&sensorA, &sensorB);
+	sensor = color_init(integration_time_ms, IO_AR9, IO_AR8);
     IR_init();
     return true;
 }
@@ -126,8 +130,13 @@ int downwardDistanceData() {
 /**
  *  Method to return the color of the block 
 */
-char colorSensor() {
-    char color = 'u'; //u for unknown
+struct color colorSensor() {
+	int integration_time_ms = 60;
+	tcsReading color_reading = color_read(sensor, integration_time_ms);
+    struct color color;
+	color.red = color_reading.red; 
+	color.green = color_reading.green; 
+	color.blue = color_reading.blue; 
     return color;
 }
 

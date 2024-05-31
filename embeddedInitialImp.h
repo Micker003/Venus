@@ -9,6 +9,14 @@ struct IRSensors {
     int sensor3Val;
     int sensor4Val;
 };
+
+struct color {
+    int red; 
+    int green;
+    int blue;
+};
+
+
 //Initialize all sensors before usage (MUST HAVE)
 bool embeddedInit();
 
@@ -25,7 +33,7 @@ int downwardDistanceData();
 /**
  *  Method to return the color of the block 
 */
-char colorSensor();
+struct color colorSensor();
 
 /**
  * measure the values for all three IR sensors
