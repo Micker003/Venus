@@ -358,7 +358,25 @@ void robotNavigation(struct coordinates current, struct coordinates destination)
 }
 
 
-
+/**
+ * Method to convert RGB values to color integer
+ * @param color Struct containing RGB values
+ * @return Color integer based on the specified scheme
+ */
+int convertToColor(struct color color) {
+    // Check for the presence of a dominant color
+    if (color.R > 150 && color.R > color.G && color.R > color.B) {
+        return 1; //1 represents red
+    } else if (color.G > 150 && color.G > color.R && color.G > color.B) {
+        return 2; //2 represents green
+    } else if (color.B > 150 && color.B > color.R && color.B > color.G) {
+        return 3; //3 represents blue
+    } else if (color.R > 200 && color.G > 200 && color.B > 200) {
+        return 4; //4 represents white
+    } else {
+        return 5; // 5 represents black
+    }
+}
 
 
 // Prototype for the checkSquare function
@@ -395,16 +413,18 @@ struct squareType checkSquare() {
     int blockHeight = downwardDistanceData();
     //height of smallest block assumed to be 3 cm and height of sensor above ground assumed as 6 cm
     if (blockHeight < 20) {              //checking for big block
-        int color = colorSensor();
+        struct color colorstr = colorSensor();
+        int color = convertToColor(colorstr);
         s.blockColor = color; 
         s.blockType = 5;
     } if (blockHeight < 30 && blockHeight > 20) {
-        int color = colorSensor();
+        struct color colorstr = colorSensor();
+        int color = convertToColor(colorstr);
         s.blockColor = color; 
         s.blockType = 4;
     } else {
-        s.blockColor = 0;
-        s.blockType = 6;
+        s.blockColor = 0; //0 represents no color 
+        s.blockType = 6; //6 represents no block
     }
 
 
@@ -449,7 +469,7 @@ int returnSquareProperty(struct squareType s) {
     } else if (s.holePresent = 1) {
         return 3; // 3 represents hole
     } else if (s.blockType != 6) {
-        return 1000*s.blockType + s.blockColor;
+        return 10*s.blockType + s.blockColor;
     } else {
         return 0; //0 represents empty
     }
@@ -465,10 +485,10 @@ int exploreForward(struct coordinates cc, struct Queue q) {
     struct coordinates be;
     be.x = cc.x;
     be.y = cc.y + 1;
-    int duplication_check = isInArrayList(&list, be);
-    if(duplication_check > 0) {
-        check = 1;
-        return check;
+    int duplication_check = isInArrayList(&list, be); 
+    if(duplication_check > 0) { 
+        check = 1; 
+        return check; 
     }
     struct squareType st = checkSquare();
     int propertyAtCoordinate = returnSquareProperty(st);

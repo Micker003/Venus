@@ -19,17 +19,17 @@ int downwardDistanceData() {
  *  Method to return the color of the block 
 */
 
-struct color_value {
+struct color {
     int R;
     int G;
     int B;
 };
 
 //prototype for colorSensor method
-struct color_value colorSensor(void);
+struct color colorSensor(void);
 
-struct color_value colorSensor() {
-    struct color_value color; 
+struct color colorSensor() {
+    struct color color; 
     color.R = 0;
     color.G = 0;
     color.B = 0;
