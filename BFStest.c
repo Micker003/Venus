@@ -7,9 +7,6 @@
 #define initialy 0
 #define MAX_SIZE 100
 
-//<<CHECK TODO ON LINE 277 TO PICK UP ON THE NAVIGATION METHOD>>
-//ensure that the robot does not cross over boundary
-
 
 int IRthreshold = 100;  //threshold for which IR sensor data is determined to be color black
 
@@ -17,7 +14,7 @@ int IRthreshold = 100;  //threshold for which IR sensor data is determined to be
 struct coordinates {
     int x; 
     int y;
-    char objectAtLocation;
+    int objectAtLocation;
 };
 
 // Struct for ArrayList structure
@@ -116,10 +113,10 @@ struct coordinates rear(Queue* q) {
 
 //struct for the properties of a particular square as interpreted by sensor data
 struct squareType {
-    //blockType can be "small" || "big"
-    char blockType; 
-    //block color can be any string corresponding to the RBG color returned by embedded software method
-    char blockColor; 
+    //blockType can be 4 for "small" || 5 for "big" || 6 for null
+    int blockType; 
+    //block color can be any string corresponding to the RBG color returned by embedded software method the integer represents the rgb value
+    int blockColor; 
     //parity value, 1 is true and 0 is false
     int cliffPresent;
     //parity value for hole
@@ -185,7 +182,7 @@ struct coordinates moveRobot(struct coordinates inputCoordinate, int dirSelVal) 
  * returns if square is free and has been discovered
 */
 int findObjectAtCoordinate(ArrayList *list, struct coordinates target) {
-    char objectAtCoordinate;
+    int objectAtCoordinate;
     for (size_t i = 0; i < list->size; i++) {
         if (list->array[i].x == target.x && list->array[i].y == target.y) {
             objectAtCoordinate = list->array->objectAtLocation;
@@ -194,12 +191,16 @@ int findObjectAtCoordinate(ArrayList *list, struct coordinates target) {
         }
     }
     
-    if (objectAtCoordinate == "Empty") {
+    if (objectAtCoordinate = 0) {
         return 1; 
     } else {
         return 0;
     }
 }
+
+// Prototypes for the functions
+void avoidCollisions(int axisOfMovement, struct coordinates current, struct coordinates target, int xDistanceToCover, int yDistanceToCover);
+void robotNavigation(struct coordinates current, struct coordinates destination);
 
 /**
  * method to enable robot to avoid collisions with objects on the map 
@@ -266,6 +267,10 @@ void avoidCollisions(int axisOfMovement, struct coordinates current, struct coor
 
     }
 }
+
+
+// Prototype for the checkSquare function
+void robotNavigation(struct coordinates current, struct coordinates destination);
 
 /**
  * method that creates a path for the robot to navigate to the 
@@ -354,167 +359,10 @@ void robotNavigation(struct coordinates current, struct coordinates destination)
 
 
 
-/**
- * method to explore the square ahead of the currently occupied square
- * adds the coordinate explored to the array
- * cc represents the current coordinates and be represents the coordinate being explored
-*/
-int exploreForward(struct coordinates cc, struct Queue q) {
-    int check = 0;
-    struct coordinates be;
-    be.x = cc.x;
-    be.y = cc.y + 1;
-    int duplication_check = isInArrayList(&list, be);
-    if(duplication_check > 0) {
-        check = 1;
-        return check;
-    }
-    struct squareType st = checkSquare();
-    char propertyAtCoordinate = returnSquareProperty(st);
-    be.objectAtLocation = propertyAtCoordinate; // add the value for the object at location to the coordinate before adding to list 
-    addElement(&list, be);
-    if (propertyAtCoordinate = "empty") {
-        enqueue(&q, be);    //coordinate is only enqueued for further exploration if it is empty.
-    }
-    return check;
-}
-
-/**
- * method to explore the square to the right of the currently occupied square
- * adds the coordinate explored to the array
-*/
-int exploreRight(struct coordinates cc, struct Queue q) {
-    int check = 0;
-    struct coordinates be;
-    be.x = cc.x + 1;
-    be.y = cc.y;
-    int duplication_check = isInArrayList(&list, be);
-    if(duplication_check > 0) {
-        check = 1;
-        return check;
-    }
-    rotateRobot(0);
-    struct squareType st = checkSquare();
-    char propertyAtCoordinate = returnSquareProperty(st);
-    be.objectAtLocation = propertyAtCoordinate;
-    addElement(&list, be);
-   if (propertyAtCoordinate = "empty") {
-        enqueue(&q, be);
-    }
-    rotateRobot(1);
-    return check;
-}
-
-/**
- * method to explore the square to the left of the currently occupied square
- * adds the coordinate explored to the array
-*/
-int exploreLeft(struct coordinates cc, struct Queue q) {
-    int check = 0;
-    struct coordinates be;
-    be.x = cc.x - 1;
-    be.y = cc.y;
-    int duplication_check = isInArrayList(&list, be);
-    if(duplication_check > 0) {
-        check = 1;
-        return check;
-    }
-    rotateRobot(1);
-    struct squareType st = checkSquare();
-    char propertyAtCoordinate = returnSquareProperty(st);
-    be.objectAtLocation = propertyAtCoordinate;
-    if (propertyAtCoordinate = "empty") {
-        enqueue(&q, be);
-    }
-    addElement(&list, be);
-    rotateRobot(0);
-    return check;
-}
-
-/**
- * method to explore the square behind of the currently occupied square
- * adds the coordinate explored to the array
-*/
-int exploreBehind(struct coordinates cc, struct Queue q) {
-    int check = 0;
-    struct coordinates be;
-    be.x = cc.x;
-    be.y = cc.y - 1;
-    int duplication_check = isInArrayList(&list, be);
-    if(duplication_check > 0) {
-        check = 1;
-        return check;
-    }
-    rotateRobot(2);
-    struct squareType st = checkSquare();
-    char propertyAtCoordinate = returnSquareProperty(st);
-    be.objectAtLocation = propertyAtCoordinate;
-    addElement(&list, be);
-    if (propertyAtCoordinate = "Empty") {
-        enqueue(&q, be);
-    }
-    rotateRobot(2);
-    return check;
-}
 
 
-/**
- * method to initialize the arraylist 
-*/
-void initArrayList(ArrayList *list) {
-    list->size = 0;
-    list->capacity = 10; // Initial capacity, can be adjusted as needed
-    list->array = (struct coordinates *)malloc(list->capacity * sizeof(struct coordinates));
-    if (list->array == NULL) {
-        fprintf(stderr, "Memory allocation failed\n");
-        exit(1);
-    }
-}
-
-/**
- * method to add an element to the arraylist 
-*/
-void addElement(ArrayList *list, struct coordinates element) {
-    if (list->size >= list->capacity) {
-        list->capacity *= 2; // Double the capacity if needed
-        list->array = (struct coordinates *)realloc(list->array, list->capacity * sizeof(struct coordinates));
-        if (list->array == NULL) {
-            fprintf(stderr, "Memory reallocation failed\n"); //for testing
-            exit(1);
-        }
-    }
-    list->array[list->size++] = element;
-}
-
-
-//checks if a given coordinate is inside arrayList
-int isInArrayList(ArrayList *list, struct coordinates target) {
-    for (size_t i = 0; i < list->size; i++) {
-        if (list->array[i].x == target.x && list->array[i].y == target.y) {
-            return 1; 
-        }
-    }
-    return 0;
-}
-
-/**
- * translates the struct squareType into a simple character that can be stored in coordinates
-*/
-char returnSquareProperty(struct squareType s) {
-    //TODO convert integer and character value inside of struct s to one of five possible char values and return said value. 
-    if(s.boundaryPresent = 1) {
-        return "Boundary";
-    } else if (s.cliffPresent = 1) {
-        return "Cliff";
-    } else if (s.holePresent = 1) {
-        return "Hole";
-    } else if (s.blockType != NULL) {
-        return s.blockType + " " + s.blockColor;
-    } else {
-        return "Empty";
-    }
-}
-
+// Prototype for the checkSquare function
+struct squareType checkSquare(void);
 
 /**
  * method to mesure the paramenters of the square infront of square currently occupied by robot 
@@ -547,16 +395,16 @@ struct squareType checkSquare() {
     int blockHeight = downwardDistanceData();
     //height of smallest block assumed to be 3 cm and height of sensor above ground assumed as 6 cm
     if (blockHeight < 2) {              //checking for big block
-        char color = colorSensor();
+        int color = colorSensor();
         s.blockColor = color; 
-        s.blockType = "big";
+        s.blockType = 5;
     } if (blockHeight < 3 && blockHeight > 2) {
-        char color = colorSendor();
+        int color = colorSensor();
         s.blockColor = color; 
-        s.blockType = "small";
+        s.blockType = 4;
     } else {
-        s.blockColor = NULL;
-        s.blockType = NULL;
+        s.blockColor = 0;
+        s.blockType = 6;
     }
 
 
@@ -564,19 +412,183 @@ struct squareType checkSquare() {
 
 }
 
+//checks if a given coordinate is inside arrayList
+int isInArrayList(ArrayList *list, struct coordinates target) {
+    for (size_t i = 0; i < list->size; i++) {
+        if (list->array[i].x == target.x && list->array[i].y == target.y) {
+            return 1; 
+        }
+    }
+    return 0;
+}
+
+/**
+ * method to add an element to the arraylist 
+*/
+void addElement(ArrayList *list, struct coordinates element) {
+    if (list->size >= list->capacity) {
+        list->capacity *= 2; // Double the capacity if needed
+        list->array = (struct coordinates *)realloc(list->array, list->capacity * sizeof(struct coordinates));
+        if (list->array == NULL) {
+            fprintf(stderr, "Memory reallocation failed\n"); //for testing
+            exit(1);
+        }
+    }
+    list->array[list->size++] = element;
+}
+
+/**
+ * translates the struct squareType into a simple character that can be stored in coordinates
+*/
+int returnSquareProperty(struct squareType s) {
+    //TODO convert integer and character value inside of struct s to one of five possible char values and return said value. 
+    if(s.boundaryPresent = 1) {
+        return 1; //1 represents boundary
+    } else if (s.cliffPresent = 1) {
+        return 2; // 2 represents cliff
+    } else if (s.holePresent = 1) {
+        return 3; // 3 represents hole
+    } else if (s.blockType != 6) {
+        return 1000*s.blockType + s.blockColor;
+    } else {
+        return 0; //0 represents empty
+    }
+}
+
+/**
+ * method to explore the square ahead of the currently occupied square
+ * adds the coordinate explored to the array
+ * cc represents the current coordinates and be represents the coordinate being explored
+*/
+int exploreForward(struct coordinates cc, struct Queue q) {
+    int check = 0;
+    struct coordinates be;
+    be.x = cc.x;
+    be.y = cc.y + 1;
+    int duplication_check = isInArrayList(&list, be);
+    if(duplication_check > 0) {
+        check = 1;
+        return check;
+    }
+    struct squareType st = checkSquare();
+    int propertyAtCoordinate = returnSquareProperty(st);
+    be.objectAtLocation = propertyAtCoordinate; // add the value for the object at location to the coordinate before adding to list 
+    addElement(&list, be);
+    if (propertyAtCoordinate = 0) { //0 represents empty
+        enqueue(&q, be);    //coordinate is only enqueued for further exploration if it is empty.
+    }
+    return check;
+}
+
+/**
+ * method to explore the square to the right of the currently occupied square
+ * adds the coordinate explored to the array
+*/
+int exploreRight(struct coordinates cc, struct Queue q) {
+    int check = 0;
+    struct coordinates be;
+    be.x = cc.x + 1;
+    be.y = cc.y;
+    int duplication_check = isInArrayList(&list, be);
+    if(duplication_check > 0) {
+        check = 1;
+        return check;
+    }
+    rotateRobot(0);
+    struct squareType st = checkSquare();
+    int propertyAtCoordinate = returnSquareProperty(st);
+    be.objectAtLocation = propertyAtCoordinate;
+    addElement(&list, be);
+   if (propertyAtCoordinate = 0) {
+        enqueue(&q, be);
+    }
+    rotateRobot(1);
+    return check;
+}
+
+/**
+ * method to explore the square to the left of the currently occupied square
+ * adds the coordinate explored to the array
+*/
+int exploreLeft(struct coordinates cc, struct Queue q) {
+    int check = 0;
+    struct coordinates be;
+    be.x = cc.x - 1;
+    be.y = cc.y;
+    int duplication_check = isInArrayList(&list, be);
+    if(duplication_check > 0) {
+        check = 1;
+        return check;
+    }
+    rotateRobot(1);
+    struct squareType st = checkSquare();
+    int propertyAtCoordinate = returnSquareProperty(st);
+    be.objectAtLocation = propertyAtCoordinate;
+    if (propertyAtCoordinate = 0) {
+        enqueue(&q, be);
+    }
+    addElement(&list, be);
+    rotateRobot(0);
+    return check;
+}
+
+/**
+ * method to explore the square behind of the currently occupied square
+ * adds the coordinate explored to the array
+*/
+int exploreBehind(struct coordinates cc, struct Queue q) {
+    int check = 0;
+    struct coordinates be;
+    be.x = cc.x;
+    be.y = cc.y - 1;
+    int duplication_check = isInArrayList(&list, be);
+    if(duplication_check > 0) {
+        check = 1;
+        return check;
+    }
+    rotateRobot(2);
+    struct squareType st = checkSquare();
+    int propertyAtCoordinate = returnSquareProperty(st);
+    be.objectAtLocation = propertyAtCoordinate;
+    addElement(&list, be);
+    if (propertyAtCoordinate = 0) {
+        enqueue(&q, be);
+    }
+    rotateRobot(2);
+    return check;
+}
+
+
+/**
+ * method to initialize the arraylist 
+*/
+void initArrayList(ArrayList *list) {
+    list->size = 0;
+    list->capacity = 10; // Initial capacity, can be adjusted as needed
+    list->array = (struct coordinates *)malloc(list->capacity * sizeof(struct coordinates));
+    if (list->array == NULL) {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(1);
+    }
+}
+
+
+//prototype for BFS method
+void BFS(struct coordinates currentCoordinate);
+
 /**
 * primary control method calling other mehtods in program 
 * @pre nil
 * @post 
-* @return void   
+* @return int   
 */
-void main() {
+int main(void) {
     struct coordinates currentCoordinate;
     //create the initial coordinate which can be assumed as empty
     currentCoordinate.x = 0;
     currentCoordinate.y = 0;
 
-    currentCoordinate.objectAtLocation = "Empty";
+    currentCoordinate.objectAtLocation = 0;
     
 
     initArrayList(&list);
@@ -587,7 +599,7 @@ void main() {
     //send the arraylist to the MQTT server for visualization
     //TODO
     //After sending the data this code terminates
-    
+    return 0;
 }
 
  /**
@@ -617,3 +629,7 @@ void BFS(struct coordinates currentCoordinate) {
     }
     main();
 }
+
+
+
+

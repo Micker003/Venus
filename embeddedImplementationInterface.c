@@ -18,8 +18,9 @@ int downwardDistanceData() {
 /**
  *  Method to return the color of the block 
 */
-char colorSensor() {
-    char color = 'u'; //u for unknown
+int colorSensor() {
+    int color = 0; //0 for unknown
+    //TODO Embedded color sensor implementation
     return color;
 }
 
