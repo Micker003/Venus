@@ -19,8 +19,20 @@ int downwardDistanceData() {
  *  Method to return the color of the block 
 */
 
-int colorSensor() {
-    int color = 0; //0 for unknown
+struct color_value {
+    int R;
+    int G;
+    int B;
+};
+
+//prototype for colorSensor method
+struct color_value colorSensor(void);
+
+struct color_value colorSensor() {
+    struct color_value color; 
+    color.R = 0;
+    color.G = 0;
+    color.B = 0;
     //TODO Embedded color sensor implementation
     return color;   // we return color value of 0 which will be interpreted by the algorithm as no reading on the color sensor
 }
@@ -31,6 +43,7 @@ struct IRSensors {
     int sensor3Val;
     int sensor4Val;
 };
+
 
 /**
  * measure the values for all four IR sensors
