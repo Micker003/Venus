@@ -2,22 +2,22 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-/**
- * Method to return the distance reading from the forward TOF sensor 
-*/
-int forwardDistanceData() {
-    return 100; //algorithm testing value, 100 means that no action will be taken by the robot to avoid a certain coordinate
-}
+int distancedwd = 60;
+int distancefwd = 100;
+
 /**
  * Method to return distance between ground and robot in order to determine height of block 
 */
-
-int downwardDistanceData() {
-  return 60; //downward distance is set to always return 60 which would be interpreted by the algorithm as no block being present
+int dwdDistanceData() {
+  return distancedwd; //downward distance is set to always return 60 which would be interpreted by the algorithm as no block being present
 }
+
 /**
- *  Method to return the color of the block 
+ * Method to return the distance reading from the forward TOF sensor 
 */
+int fwdDistanceData() {
+    return distancefwd;
+}
 
 struct color {
     int R;
@@ -28,6 +28,9 @@ struct color {
 //prototype for colorSensor method
 struct color colorSensor(void);
 
+/**
+ *  Method to return the color of the block 
+*/
 struct color colorSensor() {
     struct color color; 
     color.R = 0;
@@ -67,19 +70,19 @@ void rotateRobot(int direction) {
     switch(d) {
         case 0:
         //rotate right by 90 degrees
-            printf("rotate right 90");
+            printf("rotate right 90 \n");
         //TODO
         break;
         
         case 1:
         //rotate left by 90 degrees
-            printf("rotate left 90");
+            printf("rotate left 90 \n");
         //TODO
         break;
 
         case 2:
         //rotate robot 180 degrees (backwards)
-            printf("rotate 180 degrees");
+            printf("rotate 180 degrees \n");
         //TODO
         break;
     }
@@ -95,7 +98,7 @@ void moveRobotForwardOrBackward(int direction) {
         rotateRobot(2);
         moveRobotForwardOrBackward(1);
     } else {
-        printf("move robot forward 5 cm ");
+        printf("move robot forward 5 cm \n");
     }
 }
 

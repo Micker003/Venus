@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include "embeddedImplementationInterface.c"
+#include "AlgorithmTestCases.c"
 #define initialx 0
 #define initialy 0
 #define MAX_SIZE 100
@@ -59,6 +60,7 @@ bool isFull(Queue* q) {
  * method to enqueue an element into the queue
 */
 void enqueue(Queue* q, struct coordinates value) {
+    printf("ENQUEUEING STARTED\n");
     if (isFull(q)) {
         fprintf(stderr, "Queue is full\n");
         exit(1);
@@ -76,9 +78,10 @@ void enqueue(Queue* q, struct coordinates value) {
 */
 struct coordinates dequeue(Queue* q) {
     if (isEmpty(q)) {
-        fprintf(stderr, "Queue is empty\n");
+        fprintf(stderr, "BALLS\n");
         exit(1);
     }
+    printf("dequeueing STARTED");
     struct coordinates value = q->data[q->front];
     if (q->front == q->rear) {
         q->front = -1;
@@ -386,11 +389,12 @@ struct squareType checkSquare(void);
  * method to mesure the paramenters of the square infront of square currently occupied by robot 
 */
 struct squareType checkSquare() {
-
+    printf("square check started\n");
     struct squareType s; 
     struct IRSensors IR;
 
-    int cliffDistance = forwardDistanceData();
+    int cliffDistance;
+    cliffDistance = fwdDistanceData();
     //distance of each move is assumed to be 5 cm 
     if (cliffDistance < 5) {
         s.cliffPresent = 1;
@@ -398,7 +402,11 @@ struct squareType checkSquare() {
         s.cliffPresent = 0;
     }
     
-    IR = measureIRData();
+    IR.sensor1Val = measureIRData().sensor1Val;
+    IR.sensor2Val = measureIRData().sensor2Val;
+    IR.sensor3Val = measureIRData().sensor3Val;
+    IR.sensor4Val = measureIRData().sensor4Val;
+
     if (IR.sensor1Val > IRthreshold && IR.sensor2Val > IRthreshold && IR.sensor3Val > IRthreshold) {
         s.boundaryPresent = 1; //if all three sensors indicate the surface is black we return true for boundary present
         s.holePresent = 0;
@@ -410,7 +418,7 @@ struct squareType checkSquare() {
         s.holePresent = 0;
     }
 
-    int blockHeight = downwardDistanceData();
+    int blockHeight = dwdDistanceData();
     //height of smallest block assumed to be 3 cm and height of sensor above ground assumed as 6 cm
     if (blockHeight < 20) {              //checking for big block
         struct color colorstr = colorSensor();
@@ -481,6 +489,8 @@ int returnSquareProperty(struct squareType s) {
  * cc represents the current coordinates and be represents the coordinate being explored
 */
 int exploreForward(struct coordinates cc, struct Queue q) {
+    printf("forward exploration started\n");
+
     int check = 0;
     struct coordinates be;
     be.x = cc.x;
@@ -494,9 +504,9 @@ int exploreForward(struct coordinates cc, struct Queue q) {
     int propertyAtCoordinate = returnSquareProperty(st);
     be.objectAtLocation = propertyAtCoordinate; // add the value for the object at location to the coordinate before adding to list 
     addElement(&list, be);
-    if (propertyAtCoordinate = 0) { //0 represents empty
+    //if (propertyAtCoordinate = 0) { //0 represents empty
         enqueue(&q, be);    //coordinate is only enqueued for further exploration if it is empty.
-    }
+    //}
     return check;
 }
 
@@ -505,6 +515,7 @@ int exploreForward(struct coordinates cc, struct Queue q) {
  * adds the coordinate explored to the array
 */
 int exploreRight(struct coordinates cc, struct Queue q) {
+    printf("RIGHT EXPLORATION STARTED\n");
     int check = 0;
     struct coordinates be;
     be.x = cc.x + 1;
@@ -519,9 +530,9 @@ int exploreRight(struct coordinates cc, struct Queue q) {
     int propertyAtCoordinate = returnSquareProperty(st);
     be.objectAtLocation = propertyAtCoordinate;
     addElement(&list, be);
-   if (propertyAtCoordinate = 0) {
+   //if (propertyAtCoordinate = 0) {
         enqueue(&q, be);
-    }
+    //}
     rotateRobot(1);
     return check;
 }
@@ -531,9 +542,10 @@ int exploreRight(struct coordinates cc, struct Queue q) {
  * adds the coordinate explored to the array
 */
 int exploreLeft(struct coordinates cc, struct Queue q) {
+    printf("LEFT EXPLORATION STARTED\n");
     int check = 0;
     struct coordinates be;
-    be.x = cc.x - 1;
+    be.x = cc.x - 1; 
     be.y = cc.y;
     int duplication_check = isInArrayList(&list, be);
     if(duplication_check > 0) {
@@ -544,9 +556,9 @@ int exploreLeft(struct coordinates cc, struct Queue q) {
     struct squareType st = checkSquare();
     int propertyAtCoordinate = returnSquareProperty(st);
     be.objectAtLocation = propertyAtCoordinate;
-    if (propertyAtCoordinate = 0) {
+    //if (propertyAtCoordinate = 0) {
         enqueue(&q, be);
-    }
+    //}
     addElement(&list, be);
     rotateRobot(0);
     return check;
@@ -557,6 +569,7 @@ int exploreLeft(struct coordinates cc, struct Queue q) {
  * adds the coordinate explored to the array
 */
 int exploreBehind(struct coordinates cc, struct Queue q) {
+    printf("BACKWARD EXPLORATION STARTED\n");
     int check = 0;
     struct coordinates be;
     be.x = cc.x;
@@ -571,9 +584,9 @@ int exploreBehind(struct coordinates cc, struct Queue q) {
     int propertyAtCoordinate = returnSquareProperty(st);
     be.objectAtLocation = propertyAtCoordinate;
     addElement(&list, be);
-    if (propertyAtCoordinate = 0) {
+    //if (propertyAtCoordinate = 0) {
         enqueue(&q, be);
-    }
+    //}
     rotateRobot(2);
     return check;
 }
@@ -609,11 +622,17 @@ int main(void) {
     currentCoordinate.y = 0;
 
     currentCoordinate.objectAtLocation = 0;
-    
 
     initArrayList(&list);
-  
     addElement(&list, currentCoordinate);
+
+
+    // Verify that currentCoordinate has been added to the ArrayList
+    for (size_t i = 0; i < list.size; ++i) {
+        printf("ArrayList Element %zu - x: %d, y: %d, objectAtLocation: %d\n", 
+               i, list.array[i].x, list.array[i].y, list.array[i].objectAtLocation);
+    }
+
     BFS(currentCoordinate);
 
     //send the arraylist to the MQTT server for visualization
@@ -621,6 +640,9 @@ int main(void) {
     //After sending the data this code terminates
     return 0;
 }
+
+//prototype for test method print Queue
+void printQueue(Queue* q);
 
  /**
  * BFS search algorithm to search to explore the entire grid
@@ -631,6 +653,8 @@ void BFS(struct coordinates currentCoordinate) {
     struct coordinates navigateTo;
     Queue q;            //create a BFS queue
     initQueue(&q);      //initialize the BFS queue using the initQueue() method
+    printf("BFS STARTED\n");
+
     //while loop which runs until a duplicate is found or until the time limit has been reached
     while (duplication_check < 1) {
 
@@ -640,6 +664,8 @@ void BFS(struct coordinates currentCoordinate) {
         duplication_check = duplication_check + exploreLeft(beingExplored, q);
         duplication_check = duplication_check + exploreBehind(beingExplored, q); //if duplication_check > 0 break while loop
         
+        printQueue(&q);
+
         navigateTo = dequeue(&q);        //deque one of the visited coordinates from the queue and 
         //add it to a new struct called coordinates
         robotNavigation(beingExplored, navigateTo);
@@ -647,9 +673,39 @@ void BFS(struct coordinates currentCoordinate) {
       
         
     }
+
+    printf("Duplicate has been found\n");
     main();
 }
 
 
-
+/**
+ * Method to print all of the elements in a queue at any moment ini time 
+*/
+void printQueue(Queue* q) {
+    int i;
+    if (isEmpty(q)) {
+        printf("NOTHING HAS BEEN ENQUEUED FUCK\n");
+        return;
+    }
+    printf("Queue elements: ");
+    i = q->front;
+    if (q->front <= q->rear) {
+        while (i <= q->rear) {
+            printf("(%d,%d) ", q->data[i].x, q->data[i].y);
+            i++;
+        }
+    } else {
+        while (i <= MAX_SIZE - 1) {
+            printf("(%d,%d) ", q->data[i].x, q->data[i].y);
+            i++;
+        }
+        i = 0;
+        while (i <= q->rear) {
+            printf("(%d,%d) ", q->data[i].x, q->data[i].y);
+            i++;
+        }
+    }
+    printf("\n");
+}
 
