@@ -7,6 +7,7 @@ int distancefwd = 100;
 
 /**
  * Method to return distance between ground and robot in order to determine height of block 
+ * 
 */
 int dwdDistanceData() {
   return distancedwd; //downward distance is set to always return 60 which would be interpreted by the algorithm as no block being present
