@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include "embeddedImplementationInterface.c"
 #include "AlgorithmTestCases.c"
+#include "BFStest.h"
 #define initialx 0
 #define initialy 0
 #define MAX_SIZE 100
@@ -63,7 +64,7 @@ void enqueue(Queue* q, struct coordinates value) {
     printf("ENQUEUEING STARTED\n");
     if (isFull(q)) {
         fprintf(stderr, "Queue is full\n");
-        exit(1);
+       return;
     }
     
     if (isEmpty(q)) {
@@ -71,6 +72,7 @@ void enqueue(Queue* q, struct coordinates value) {
     }
     q->rear = (q->rear + 1) % MAX_SIZE;
     q->data[q->rear] = value;
+    printf("Enqueued: (%d, %d)\n", value.x, value.y);
 }
 
 /**
@@ -396,7 +398,7 @@ struct squareType checkSquare() {
     int cliffDistance;
     cliffDistance = fwdDistanceData();
     //distance of each move is assumed to be 5 cm 
-    if (cliffDistance < 5) {
+    if (cliffDistance < 50) {
         s.cliffPresent = 1;
     } else {
         s.cliffPresent = 0;
@@ -492,8 +494,7 @@ int exploreForward(struct coordinates cc, struct Queue q) {
     printf("forward exploration started\n");
 
     int check = 0;
-    struct coordinates be;
-    be.x = cc.x;
+    struct coordinates be = cc;
     be.y = cc.y + 1;
     int duplication_check = isInArrayList(&list, be); 
     if(duplication_check > 0) { 
@@ -501,12 +502,14 @@ int exploreForward(struct coordinates cc, struct Queue q) {
         return check; 
     }
     struct squareType st = checkSquare();
-    int propertyAtCoordinate = returnSquareProperty(st);
+    int propertyAtCoordinate;
+    propertyAtCoordinate = returnSquareProperty(st);
     be.objectAtLocation = propertyAtCoordinate; // add the value for the object at location to the coordinate before adding to list 
-    addElement(&list, be);
-    //if (propertyAtCoordinate = 0) { //0 represents empty
+    
+    if (propertyAtCoordinate = 0) { //0 represents empty
         enqueue(&q, be);    //coordinate is only enqueued for further exploration if it is empty.
-    //}
+    }
+    addElement(&list, be);
     return check;
 }
 
@@ -517,9 +520,8 @@ int exploreForward(struct coordinates cc, struct Queue q) {
 int exploreRight(struct coordinates cc, struct Queue q) {
     printf("RIGHT EXPLORATION STARTED\n");
     int check = 0;
-    struct coordinates be;
+    struct coordinates be = cc;
     be.x = cc.x + 1;
-    be.y = cc.y;
     int duplication_check = isInArrayList(&list, be);
     if(duplication_check > 0) {
         check = 1;
@@ -529,10 +531,11 @@ int exploreRight(struct coordinates cc, struct Queue q) {
     struct squareType st = checkSquare();
     int propertyAtCoordinate = returnSquareProperty(st);
     be.objectAtLocation = propertyAtCoordinate;
-    addElement(&list, be);
-   //if (propertyAtCoordinate = 0) {
+    
+    if (propertyAtCoordinate = 0) {
         enqueue(&q, be);
-    //}
+    }
+    addElement(&list, be);
     rotateRobot(1);
     return check;
 }
@@ -544,9 +547,8 @@ int exploreRight(struct coordinates cc, struct Queue q) {
 int exploreLeft(struct coordinates cc, struct Queue q) {
     printf("LEFT EXPLORATION STARTED\n");
     int check = 0;
-    struct coordinates be;
+    struct coordinates be = cc;
     be.x = cc.x - 1; 
-    be.y = cc.y;
     int duplication_check = isInArrayList(&list, be);
     if(duplication_check > 0) {
         check = 1;
@@ -556,9 +558,9 @@ int exploreLeft(struct coordinates cc, struct Queue q) {
     struct squareType st = checkSquare();
     int propertyAtCoordinate = returnSquareProperty(st);
     be.objectAtLocation = propertyAtCoordinate;
-    //if (propertyAtCoordinate = 0) {
+    if (propertyAtCoordinate = 0) {
         enqueue(&q, be);
-    //}
+    }
     addElement(&list, be);
     rotateRobot(0);
     return check;
@@ -571,8 +573,7 @@ int exploreLeft(struct coordinates cc, struct Queue q) {
 int exploreBehind(struct coordinates cc, struct Queue q) {
     printf("BACKWARD EXPLORATION STARTED\n");
     int check = 0;
-    struct coordinates be;
-    be.x = cc.x;
+    struct coordinates be = cc;
     be.y = cc.y - 1;
     int duplication_check = isInArrayList(&list, be);
     if(duplication_check > 0) {
@@ -583,10 +584,11 @@ int exploreBehind(struct coordinates cc, struct Queue q) {
     struct squareType st = checkSquare();
     int propertyAtCoordinate = returnSquareProperty(st);
     be.objectAtLocation = propertyAtCoordinate;
-    addElement(&list, be);
-    //if (propertyAtCoordinate = 0) {
+    
+    if (propertyAtCoordinate = 0) {
         enqueue(&q, be);
-    //}
+    }
+    addElement(&list, be);
     rotateRobot(2);
     return check;
 }
@@ -664,7 +666,7 @@ void BFS(struct coordinates currentCoordinate) {
         duplication_check = duplication_check + exploreLeft(beingExplored, q);
         duplication_check = duplication_check + exploreBehind(beingExplored, q); //if duplication_check > 0 break while loop
         
-        printQueue(&q);
+        //printQueue(&q);
 
         navigateTo = dequeue(&q);        //deque one of the visited coordinates from the queue and 
         //add it to a new struct called coordinates
