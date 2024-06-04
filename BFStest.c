@@ -73,6 +73,14 @@ void enqueue(Queue* q, struct coordinates value) {
     q->rear = (q->rear + 1) % MAX_SIZE;
     q->data[q->rear] = value;
     printf("Enqueued: (%d, %d)\n", value.x, value.y);
+
+   printf("All coordinates in the queue:\n");
+    int i = q->front;
+    while (i != q->rear) {
+        printf("(%d, %d, %d)\n", q->data[i].x, q->data[i].y, q->data[i].objectAtLocation);
+        i = (i + 1) % MAX_SIZE;
+    }
+    printf("(%d, %d, %d)\n", q->data[i].x, q->data[i].y, q->data[i].objectAtLocation); // Print the last element
 }
 
 /**
@@ -513,7 +521,7 @@ int exploreForward(struct coordinates cc, struct Queue q) {
     be.objectAtLocation = propertyAtCoordinate; // add the value for the object at location to the coordinate before adding to list 
     printf("property at coordinate: %d \n", propertyAtCoordinate);
     if (propertyAtCoordinate == 0) { //0 represents empty
-        printf("enqueue condition passed\n");
+        printf("forward enqueue condition passed\n");
         enqueue(&q, be);    //coordinate is only enqueued for further exploration if it is empty.
     }
     addElement(&list, be);
@@ -569,7 +577,7 @@ int exploreLeft(struct coordinates cc, struct Queue q) {
     propertyAtCoordinate = returnSquareProperty(st);
     be.objectAtLocation = propertyAtCoordinate;
     if (propertyAtCoordinate == 0) {
-        printf("right exploration condition passed \n");
+        printf("left exploration condition passed \n");
         enqueue(&q, be);
     }
     addElement(&list, be);
@@ -597,8 +605,8 @@ int exploreBehind(struct coordinates cc, struct Queue q) {
     propertyAtCoordinate = returnSquareProperty(st);
     be.objectAtLocation = propertyAtCoordinate;
     
-    if (propertyAtCoordinate = 0) {
-        printf("left exploration condition passed \n");
+    if (propertyAtCoordinate == 0) {
+        printf("backward exploration condition passed \n");
         enqueue(&q, be);
     }
     addElement(&list, be);
@@ -679,9 +687,9 @@ void BFS(struct coordinates currentCoordinate) {
         duplication_check = duplication_check + exploreLeft(beingExplored, q);
         duplication_check = duplication_check + exploreBehind(beingExplored, q); //if duplication_check > 0 break while loop
         
-        //printQueue(&q);
+        printQueue(&q);
 
-        navigateTo = dequeue(&q);        //deque one of the visited coordinates from the queue and 
+        navigateTo = dequeue(&q);        //dequeue one of the visited coordinates from the queue and 
         //add it to a new struct called coordinates
         robotNavigation(beingExplored, navigateTo);
         beingExplored = navigateTo; //once the robotNavigation() method has been executed set the robot's beingExplored coordinate to the navigateTo coordinate. 
