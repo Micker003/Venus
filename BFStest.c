@@ -35,6 +35,7 @@ typedef struct Queue {
     int rear;
 } Queue;
 
+
 /**
  * method to initialize the bfs queue
 */
@@ -87,11 +88,12 @@ void enqueue(Queue* q, struct coordinates value) {
  * method to dequeue an element from the queue
 */
 struct coordinates dequeue(Queue* q) {
-    //if (isEmpty(q)) {
-       // fprintf(stderr, "BALLS\n");
-        //exit(1);
-    //}
-    printf("dequeueing STARTED");
+    printf("dequeueing STARTED \n");
+    if (isEmpty(q)) {
+       fprintf(stderr, "BALLS\n");
+        exit(1);
+    }
+    
     struct coordinates value = q->data[q->front];
     if (q->front == q->rear) {
         q->front = -1;
@@ -664,13 +666,11 @@ int main(void) {
     return 0;
 }
 
-//prototype for test method print Queue
-void printQueue(Queue* q);
-
  /**
  * BFS search algorithm to search to explore the entire grid
 */
 void BFS(struct coordinates currentCoordinate) {
+    int i = 0;
     int duplication_check = 0;
     struct coordinates beingExplored = currentCoordinate; 
     struct coordinates navigateTo;
@@ -679,7 +679,7 @@ void BFS(struct coordinates currentCoordinate) {
     printf("BFS STARTED\n");
 
     //while loop which runs until a duplicate is found or until the time limit has been reached
-    while (duplication_check < 1) {
+    while (duplication_check < 1 && i < 30) {
 
         //explore all of the squares adjacent to currently occupied square
         duplication_check = exploreForward(beingExplored, q);
