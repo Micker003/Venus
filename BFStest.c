@@ -499,7 +499,7 @@ int exploreForward(struct coordinates cc, struct Queue* queue) {
     int duplication_check = isInArrayList(&list, be); 
     if(duplication_check > 0) { 
         check = 1; 
-        printf("duplicate found in arraylist");
+        printf("duplicate found in arraylist\n");
         return check; 
     }
     struct squareType st = checkSquare();
@@ -527,7 +527,7 @@ int exploreRight(struct coordinates cc, struct Queue* queue) {
     int duplication_check = isInArrayList(&list, be);
     if(duplication_check > 0) {
         check = 1;
-        printf("duplicate found in arraylist");
+        printf("duplicate found in arraylist \n");
         return check;
     }
     rotateRobot(0);
@@ -557,7 +557,7 @@ int exploreLeft(struct coordinates cc, struct Queue* queue) {
     int duplication_check = isInArrayList(&list, be);
     if(duplication_check > 0) {
         check = 1;
-        printf("duplicate found in arraylist");
+        printf("duplicate found in arraylist\n");
         return check;
     }
     rotateRobot(1);
@@ -586,7 +586,7 @@ int exploreBehind(struct coordinates cc, struct Queue* queue) {
     int duplication_check = isInArrayList(&list, be);
     if(duplication_check > 0) {
         check = 1;
-        printf("duplicate found in arraylist");
+        printf("duplicate found in arraylist\n");
         return check;
     }
     rotateRobot(2);
@@ -667,7 +667,7 @@ void BFS(struct coordinates currentCoordinate) {
     printf("BFS STARTED\n");
 
     //while loop which runs until a duplicate is found or until the time limit has been reached
-    while (duplication_check < 1 || i < 10) {
+    while (duplication_check < 1 || i < 5) {
         printf("Cooridnate BeingExplored = (%d, %d, %d)\n", beingExplored.x, beingExplored.y, beingExplored.objectAtLocation);
         //explore all of the squares adjacent to currently occupied square
         duplication_check = exploreForward(beingExplored, queue);
