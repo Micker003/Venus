@@ -71,13 +71,13 @@ void rotateRobot(int direction) {
     switch(d) {
         case 0:
         //rotate right by 90 degrees
-            printf("rotate right 90 \n");
+            printf("rotate RIGHT 90 \n");
         //TODO
         break;
         
         case 1:
         //rotate left by 90 degrees
-            printf("rotate left 90 \n");
+            printf("rotate LEFT 90 \n");
         //TODO
         break;
 
@@ -99,7 +99,7 @@ void moveRobotForwardOrBackward(int direction) {
         rotateRobot(2);
         moveRobotForwardOrBackward(1);
     } else {
-        printf("move robot forward 5 cm \n");
+        printf("move robot FORWARD  \n");
     }
 }
 

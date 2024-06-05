@@ -177,16 +177,16 @@ struct coordinates moveRobot(struct coordinates inputCoordinate, int dirSelVal) 
  * returns if square is free and has been discovered
 */
 int findObjectAtCoordinate(ArrayList *list, struct coordinates target) {
-    int objectAtCoordinate;
+    int objectAtCoordinate = 0;
     for (size_t i = 0; i < list->size; i++) {
         if (list->array[i].x == target.x && list->array[i].y == target.y) {
             objectAtCoordinate = list->array->objectAtLocation;
         } else {
-            return 0;
+            objectAtCoordinate = 0;
         }
     }
     
-    if (objectAtCoordinate = 0) {
+    if (objectAtCoordinate == 0) {
         return 1; 
     } else {
         return 0;
@@ -215,10 +215,10 @@ void avoidCollisions(int axisOfMovement, struct coordinates current, struct coor
         int upCheck = findObjectAtCoordinate(&list, upCoor);
         int downCheck = findObjectAtCoordinate(&list, downCoor);
 
-        if (upCheck = 1) {
+        if (upCheck == 1) {
             current = moveRobot(current, 0);
             robotNavigation(current, target);
-        } else if (downCheck = 1) {
+        } else if (downCheck == 1) {
             current = moveRobot(current, 3);
             robotNavigation(current,target);
         } else {
@@ -242,10 +242,12 @@ void avoidCollisions(int axisOfMovement, struct coordinates current, struct coor
             int rightCheck = findObjectAtCoordinate(&list, rightCoor);
             int leftCheck = findObjectAtCoordinate(&list, leftCoor);
 
-            if (rightCheck = 1) {
+            if (rightCheck == 1) {
+                //printf("Is this the infinite print issue?");
+                //exit(1);
                 current = moveRobot(current, 1);
                 robotNavigation(current, target);
-            } else if (leftCheck = 1) {
+            } else if (leftCheck == 1) {
                 current = moveRobot(current, 2);
                 robotNavigation(current,target);
             } else {
@@ -278,11 +280,10 @@ void robotNavigation(struct coordinates current, struct coordinates destination)
     int xDistanceToCover = destination.x - current.x;
 
     printf("current: (%d, %d, %d), destination: (%d, %d, %d)\n", current.x, current.y, current.objectAtLocation, destination.x, destination.y, destination.objectAtLocation );
-    /**
-     * 
-     * 
+ 
     
     if (yDistanceToCover > 0 ) {
+        printf("Covering Y distance up \n");
         while (current.y != destination.y) {
             struct coordinates upCoor = current; 
             upCoor.y = current.y + 1;
@@ -290,6 +291,7 @@ void robotNavigation(struct coordinates current, struct coordinates destination)
             switch (upCheck)
             {
             case 0:
+                printf("avoiding up collision \n");
                 avoidCollisions(1, current, destination, xDistanceToCover, yDistanceToCover);  //if a collision is detected then avoid collision method is called
                 break;
             case 1:
@@ -300,6 +302,7 @@ void robotNavigation(struct coordinates current, struct coordinates destination)
             }
         }
     } else if (yDistanceToCover < 0) {
+        printf("Covering Y distance down \n");
         while (current.y != destination.y) {
             struct coordinates downCoor = current;
             downCoor.y = current.y - 1;
@@ -307,6 +310,7 @@ void robotNavigation(struct coordinates current, struct coordinates destination)
             switch (downCheck)
             {
             case 0:
+                printf("avoiding down collision \n");
                 avoidCollisions(1, current, destination, xDistanceToCover, yDistanceToCover);
                 break;
             case 1:
@@ -319,6 +323,7 @@ void robotNavigation(struct coordinates current, struct coordinates destination)
     } 
 
     if (xDistanceToCover > 0) {
+        printf("Covering x distance right \n");
         while (current.x != destination.x) {
             struct coordinates rightCoor = current; 
             rightCoor.x = current.x + 1;
@@ -326,6 +331,7 @@ void robotNavigation(struct coordinates current, struct coordinates destination)
             switch (rightCheck)
             {
             case 0:
+                printf("avoiding right collision \n");
                 avoidCollisions(0,current,destination, xDistanceToCover, yDistanceToCover);
                 break;
             case 1:
@@ -334,6 +340,7 @@ void robotNavigation(struct coordinates current, struct coordinates destination)
             }
         }
     } else if (xDistanceToCover < 0) {
+        printf("Covering x distance left \n");
         while (current.x != destination.x) {
             struct coordinates leftCoor = current; 
             leftCoor.x = current.x - 1;
@@ -341,6 +348,7 @@ void robotNavigation(struct coordinates current, struct coordinates destination)
             switch (leftCheck)
             {
             case 0:
+                printf("avoiding left collision \n");
                 avoidCollisions(0,current, destination, xDistanceToCover, yDistanceToCover);
                 break;
             case 1:
@@ -349,7 +357,7 @@ void robotNavigation(struct coordinates current, struct coordinates destination)
             }
         }
     }
-    */
+
    
     //TODO:make sure that the robot moves to the right or left to reach the target x coordinate without hitting an object. 
     //TODO: refactor the code in order to reduce complexity of robotNavigation method. 
