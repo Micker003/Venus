@@ -28,103 +28,83 @@ typedef struct {
 
 ArrayList list;         //initialization of arraylist which will store all of the coordinates as well as their types
 
-// Define the struct for the queue
-typedef struct Queue {
-    struct coordinates data[MAX_SIZE];
-    int front; 
-    int rear;
-} Queue;
+// A structure to represent a queue
+struct Queue {
+    int front, rear, size;
+    unsigned capacity;
+    struct coordinates* array;
+};
 
+// function to create a queue of given capacity.
+// It initializes size of queue as 0
+struct Queue* createQueue(unsigned capacity)
+{
+    struct Queue* queue = (struct Queue*)malloc(sizeof(struct Queue));
+    queue->capacity = capacity;
+    queue->front = queue->size = 0;
 
-/**
- * method to initialize the bfs queue
-*/
-void initQueue(Queue* q) {
-    q->front = -1;
-    q->rear = -1;
+    // This is important, see the enqueue
+    queue->rear = capacity - 1;
+    queue->array = (struct coordinates*)malloc(queue->capacity * sizeof(struct coordinates));
+    return queue;
 }
 
-/**
- * method to check if queue is empty
-*/
-bool isEmpty(Queue* q) {
-    return (q->front == -1);
+// Queue is full when size becomes equal to the capacity
+int isFull(struct Queue* queue)
+{
+    return (queue->size == queue->capacity);
 }
 
-/**
- * method to check if the queue is full
-*/
-bool isFull(Queue* q) {
-    return ((q->rear + 1) % MAX_SIZE == q->front);
+// Queue is empty when size is 0
+int isEmpty(struct Queue* queue)
+{
+    return (queue->size == 0);
 }
 
-/**
- * method to enqueue an element into the queue
-*/
-void enqueue(Queue* q, struct coordinates value) {
-    printf("ENQUEUEING STARTED\n");
-    if (isFull(q)) {
-        fprintf(stderr, "Queue is full\n");
-       return;
-    }
-    
-    if (isEmpty(q)) {
-        q->front = 0;
-    }
-    q->rear = (q->rear + 1) % MAX_SIZE;
-    q->data[q->rear] = value;
-    printf("Enqueued: (%d, %d)\n", value.x, value.y);
-
-   printf("All coordinates in the queue:\n");
-    int i = q->front;
-    while (i != q->rear) {
-        printf("(%d, %d)\n", q->data[i].x, q->data[i].y);
-        i = (i + 1) % MAX_SIZE;
-    }
-    printf("(%d, %d)\n", q->data[i].x, q->data[i].y); // Print the last element
+// Function to add an item to the queue. It changes rear and size
+void enqueue(struct Queue* queue, struct coordinates item)
+{
+    if (isFull(queue))
+        return;
+    queue->rear = (queue->rear + 1) % queue->capacity;
+    queue->array[queue->rear] = item;
+    queue->size = queue->size + 1;
+    printf("coordinates (%d, %d, %d) enqueued to queue\n", item.x, item.y, item.objectAtLocation);
 }
 
-/**
- * method to dequeue an element from the queue
-*/
-struct coordinates dequeue(Queue* q) {
-    printf("dequeueing STARTED \n");
-    if (isEmpty(q)) {
-       fprintf(stderr, "BALLS\n");
-        exit(1);
+// Function to remove an item from queue. It changes front and size
+struct coordinates dequeue(struct Queue* queue)
+{
+    if (isEmpty(queue)) {
+        struct coordinates empty = {INT_MIN, INT_MIN, INT_MIN};
+        return empty;
     }
-    
-    struct coordinates value = q->data[q->front];
-    if (q->front == q->rear) {
-        q->front = -1;
-        q->rear = -1;
-    } else {
-        q->front = (q->front + 1) % MAX_SIZE;
-    }
-    return value;
+    struct coordinates item = queue->array[queue->front];
+    queue->front = (queue->front + 1) % queue->capacity;
+    queue->size = queue->size - 1;
+    return item;
 }
 
-/**
- * method to get the front element in the queue
-*/
-struct coordinates front(Queue* q) {
-    if (isEmpty(q)) {
-        fprintf(stderr, "Queue is empty\n");
-        exit(1);
+// Function to get front of queue
+struct coordinates front(struct Queue* queue)
+{
+    if (isEmpty(queue)) {
+        struct coordinates empty = {INT_MIN, INT_MIN, INT_MIN};
+        return empty;
     }
-    return q->data[q->front];
+    return queue->array[queue->front];
 }
 
-/**
- * method to get the rear element of the queue
-*/
-struct coordinates rear(Queue* q) {
-    if (isEmpty(q)) {
-        fprintf(stderr, "Queue is empty\n");
-        exit(1);
+// Function to get rear of queue
+struct coordinates rear(struct Queue* queue)
+{
+    if (isEmpty(queue)) {
+        struct coordinates empty = {INT_MIN, INT_MIN, INT_MIN};
+        return empty;
     }
-    return q->data[q->rear];
+    return queue->array[queue->rear];
 }
+
 
 //struct for the properties of a particular square as interpreted by sensor data
 struct squareType {
@@ -297,7 +277,11 @@ void robotNavigation(struct coordinates current, struct coordinates destination)
     int yDistanceToCover = destination.y - current.y;
     int xDistanceToCover = destination.x - current.x;
 
-
+    printf("current: (%d, %d, %d), destination: (%d, %d, %d)\n", current.x, current.y, current.objectAtLocation, destination.x, destination.y, destination.objectAtLocation );
+    /**
+     * 
+     * 
+    
     if (yDistanceToCover > 0 ) {
         while (current.y != destination.y) {
             struct coordinates upCoor = current; 
@@ -365,7 +349,7 @@ void robotNavigation(struct coordinates current, struct coordinates destination)
             }
         }
     }
-    
+    */
    
     //TODO:make sure that the robot moves to the right or left to reach the target x coordinate without hitting an object. 
     //TODO: refactor the code in order to reduce complexity of robotNavigation method. 
@@ -506,7 +490,7 @@ int returnSquareProperty(struct squareType s) {
  * adds the coordinate explored to the array
  * cc represents the current coordinates and be represents the coordinate being explored
 */
-int exploreForward(struct coordinates cc, struct Queue q) {
+int exploreForward(struct coordinates cc, struct Queue* queue) {
     printf("forward exploration started\n");
 
     int check = 0;
@@ -524,7 +508,7 @@ int exploreForward(struct coordinates cc, struct Queue q) {
     printf("property at coordinate: %d \n", propertyAtCoordinate);
     if (propertyAtCoordinate == 0) { //0 represents empty
         printf("forward enqueue condition passed\n");
-        enqueue(&q, be);    //coordinate is only enqueued for further exploration if it is empty.
+        enqueue(queue, be);    //coordinate is only enqueued for further exploration if it is empty.
     }
     addElement(&list, be);
     return check;
@@ -534,7 +518,7 @@ int exploreForward(struct coordinates cc, struct Queue q) {
  * method to explore the square to the right of the currently occupied square
  * adds the coordinate explored to the array
 */
-int exploreRight(struct coordinates cc, struct Queue q) {
+int exploreRight(struct coordinates cc, struct Queue* queue) {
     printf("RIGHT EXPLORATION STARTED\n");
     int check = 0;
     struct coordinates be = cc;
@@ -552,7 +536,7 @@ int exploreRight(struct coordinates cc, struct Queue q) {
     
     if (propertyAtCoordinate == 0) {
         printf("right exploration condition passed \n");
-        enqueue(&q, be);
+        enqueue(queue, be);
     }
     addElement(&list, be);
     rotateRobot(1);
@@ -563,7 +547,7 @@ int exploreRight(struct coordinates cc, struct Queue q) {
  * method to explore the square to the left of the currently occupied square
  * adds the coordinate explored to the array
 */
-int exploreLeft(struct coordinates cc, struct Queue q) {
+int exploreLeft(struct coordinates cc, struct Queue* queue) {
     printf("LEFT EXPLORATION STARTED\n");
     int check = 0;
     struct coordinates be = cc;
@@ -580,7 +564,7 @@ int exploreLeft(struct coordinates cc, struct Queue q) {
     be.objectAtLocation = propertyAtCoordinate;
     if (propertyAtCoordinate == 0) {
         printf("left exploration condition passed \n");
-        enqueue(&q, be);
+        enqueue(queue, be);
     }
     addElement(&list, be);
     rotateRobot(0);
@@ -591,7 +575,7 @@ int exploreLeft(struct coordinates cc, struct Queue q) {
  * method to explore the square behind of the currently occupied square
  * adds the coordinate explored to the array
 */
-int exploreBehind(struct coordinates cc, struct Queue q) {
+int exploreBehind(struct coordinates cc, struct Queue* queue) {
     printf("BACKWARD EXPLORATION STARTED\n");
     int check = 0;
     struct coordinates be = cc;
@@ -609,7 +593,7 @@ int exploreBehind(struct coordinates cc, struct Queue q) {
     
     if (propertyAtCoordinate == 0) {
         printf("backward exploration condition passed \n");
-        enqueue(&q, be);
+        enqueue(queue, be);
     }
     addElement(&list, be);
     rotateRobot(2);
@@ -674,30 +658,31 @@ void BFS(struct coordinates currentCoordinate) {
     int duplication_check = 0;
     struct coordinates beingExplored = currentCoordinate; 
     struct coordinates navigateTo;
-    Queue q;            //create a BFS queue
-    initQueue(&q);      //initialize the BFS queue using the initQueue() method
+    struct Queue* queue = createQueue(1000);   //create a BFS queue
+   
     printf("BFS STARTED\n");
 
     //while loop which runs until a duplicate is found or until the time limit has been reached
-    while (duplication_check < 1 && i < 30) {
-
+    while (duplication_check < 1 || i < 10) {
+        printf("Cooridnate BeingExplored = (%d, %d, %d)\n", beingExplored.x, beingExplored.y, beingExplored.objectAtLocation);
         //explore all of the squares adjacent to currently occupied square
-        duplication_check = exploreForward(beingExplored, q);
-        duplication_check = duplication_check + exploreRight(beingExplored, q);
-        duplication_check = duplication_check + exploreLeft(beingExplored, q);
-        duplication_check = duplication_check + exploreBehind(beingExplored, q); //if duplication_check > 0 break while loop
+        duplication_check = exploreForward(beingExplored, queue);
+        duplication_check = duplication_check + exploreRight(beingExplored, queue);
+        duplication_check = duplication_check + exploreLeft(beingExplored, queue);
+        duplication_check = duplication_check + exploreBehind(beingExplored, queue); //if duplication_check > 0 break while loop
 
 
-        navigateTo = dequeue(&q);        //dequeue one of the visited coordinates from the queue and 
+        navigateTo = dequeue(queue);        //dequeue one of the visited coordinates from the queue and 
         //add it to a new struct called coordinates
+        printf("coordinates (%d, %d, %d) dequeued from queue for Navigation\n\n", navigateTo.x, navigateTo.y, navigateTo.objectAtLocation);
         robotNavigation(beingExplored, navigateTo);
         beingExplored = navigateTo; //once the robotNavigation() method has been executed set the robot's beingExplored coordinate to the navigateTo coordinate. 
-      
+        i++; 
         
     }
 
     printf("Duplicate has been found\n");
-    main();
+    
 }
 
 
