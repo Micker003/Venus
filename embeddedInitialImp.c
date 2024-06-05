@@ -124,7 +124,7 @@ int forwardDistanceData() {
 int downwardDistanceData() {
     uint32_t iDistance;
 	iDistance = tofReadDistance(&sensorA);
-    printf("Distance Forward: %d\n", iDistance);
+    printf("Distance Downward: %d\n", iDistance);
     return iDistance;
 }
 /**
