@@ -77,20 +77,20 @@ void enqueue(Queue* q, struct coordinates value) {
    printf("All coordinates in the queue:\n");
     int i = q->front;
     while (i != q->rear) {
-        printf("(%d, %d, %d)\n", q->data[i].x, q->data[i].y, q->data[i].objectAtLocation);
+        printf("(%d, %d)\n", q->data[i].x, q->data[i].y);
         i = (i + 1) % MAX_SIZE;
     }
-    printf("(%d, %d, %d)\n", q->data[i].x, q->data[i].y, q->data[i].objectAtLocation); // Print the last element
+    printf("(%d, %d)\n", q->data[i].x, q->data[i].y); // Print the last element
 }
 
 /**
  * method to dequeue an element from the queue
 */
 struct coordinates dequeue(Queue* q) {
-    if (isEmpty(q)) {
-        fprintf(stderr, "BALLS\n");
-        exit(1);
-    }
+    //if (isEmpty(q)) {
+       // fprintf(stderr, "BALLS\n");
+        //exit(1);
+    //}
     printf("dequeueing STARTED");
     struct coordinates value = q->data[q->front];
     if (q->front == q->rear) {
@@ -686,8 +686,7 @@ void BFS(struct coordinates currentCoordinate) {
         duplication_check = duplication_check + exploreRight(beingExplored, q);
         duplication_check = duplication_check + exploreLeft(beingExplored, q);
         duplication_check = duplication_check + exploreBehind(beingExplored, q); //if duplication_check > 0 break while loop
-        
-        printQueue(&q);
+
 
         navigateTo = dequeue(&q);        //dequeue one of the visited coordinates from the queue and 
         //add it to a new struct called coordinates
@@ -701,34 +700,4 @@ void BFS(struct coordinates currentCoordinate) {
     main();
 }
 
-
-/**
- * Method to print all of the elements in a queue at any moment ini time 
-*/
-void printQueue(Queue* q) {
-    int i;
-    if (isEmpty(q)) {
-        printf("NOTHING HAS BEEN ENQUEUED FUCK\n");
-        return;
-    }
-    printf("Queue elements: ");
-    i = q->front;
-    if (q->front <= q->rear) {
-        while (i <= q->rear) {
-            printf("(%d,%d) ", q->data[i].x, q->data[i].y);
-            i++;
-        }
-    } else {
-        while (i <= MAX_SIZE - 1) {
-            printf("(%d,%d) ", q->data[i].x, q->data[i].y);
-            i++;
-        }
-        i = 0;
-        while (i <= q->rear) {
-            printf("(%d,%d) ", q->data[i].x, q->data[i].y);
-            i++;
-        }
-    }
-    printf("\n");
-}
 
