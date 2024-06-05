@@ -499,6 +499,7 @@ int exploreForward(struct coordinates cc, struct Queue* queue) {
     int duplication_check = isInArrayList(&list, be); 
     if(duplication_check > 0) { 
         check = 1; 
+        printf("duplicate found in arraylist");
         return check; 
     }
     struct squareType st = checkSquare();
@@ -526,6 +527,7 @@ int exploreRight(struct coordinates cc, struct Queue* queue) {
     int duplication_check = isInArrayList(&list, be);
     if(duplication_check > 0) {
         check = 1;
+        printf("duplicate found in arraylist");
         return check;
     }
     rotateRobot(0);
@@ -555,6 +557,7 @@ int exploreLeft(struct coordinates cc, struct Queue* queue) {
     int duplication_check = isInArrayList(&list, be);
     if(duplication_check > 0) {
         check = 1;
+        printf("duplicate found in arraylist");
         return check;
     }
     rotateRobot(1);
@@ -583,6 +586,7 @@ int exploreBehind(struct coordinates cc, struct Queue* queue) {
     int duplication_check = isInArrayList(&list, be);
     if(duplication_check > 0) {
         check = 1;
+        printf("duplicate found in arraylist");
         return check;
     }
     rotateRobot(2);
