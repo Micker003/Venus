@@ -130,17 +130,22 @@ int main() {
     currentCoordinate.objectAtLocation = "Empty";
     int ID = 0;
 
-    boolean readyToSendInfo = true;
+    bool readyToSendInfo = true;
 
-    while(readyToSendInfo){
-      if(uart_has_data(UART0)){
-        receive_information(&ID, &receivedCoordinates);
-        printf("Received message: %d, %d, %d\n", ID, receivedCoordinates.x, receivedCoordinates.y);
-      }
-      else if (readyToSendInfo){
-        send_information(ID, currentCoordinate);
-        readyToSendInfo = false;
-      }
+    while(true){
+        char ch;
+        if (read(STDIN_FILENO, &ch, 1) == 1) {
+            readyToSendInfo = true;
+        }
+
+        if(uart_has_data(UART0)){
+            receive_information(&ID, &receivedCoordinates);
+            printf("Received message: %d, %d, %d\n", ID, receivedCoordinates.x, receivedCoordinates.y);
+        }
+        else if (readyToSendInfo){
+            send_information(ID, currentCoordinate);
+            readyToSendInfo = false;
+        }
     }
 
     printf("Done\n");
