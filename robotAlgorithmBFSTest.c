@@ -2,39 +2,14 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-#include "embeddedInitialImp.c"
-#include "BFStest.h"
-#include "AlgorithmTestCases.c"
+#include "embeddedImplementationInterface.c"
+#include "robotAlgorithmBFSTest.h"
+
 
 #define initialx 0
 #define initialy 0
 #define MAX_SIZE 100
 
-
-int IRthreshold = 260;  //threshold for which IR sensor data is determined to be color black
-
-//create a struct called coordinates which can maintain the location of the robot
-struct coordinates {
-    int x; 
-    int y;
-    int objectAtLocation;
-};
-
-// Struct for ArrayList structure
-typedef struct {
-    struct coordinates *array;
-    size_t size;
-    size_t capacity;
-} ArrayList;
-
-ArrayList list;         //initialization of arraylist which will store all of the coordinates as well as their types
-
-// A structure to represent a queue
-struct Queue {
-    int front, rear, size;
-    unsigned capacity;
-    struct coordinates* array;
-};
 
 // function to create a queue of given capacity.
 // It initializes size of queue as 0
@@ -105,29 +80,6 @@ struct coordinates rear(struct Queue* queue)
     }
     return queue->array[queue->rear];
 }
-
-
-//struct for the properties of a particular square as interpreted by sensor data
-struct squareType {
-    //blockType can be 4 for "small" || 5 for "big" || 6 for null
-    int blockType; 
-    //block color can be any string corresponding to the RBG color returned by embedded software method the integer represents the rgb value
-    int blockColor; 
-    //parity value, 1 is true and 0 is false
-    int cliffPresent;
-    //parity value for hole
-    int holePresent;
-    //parity value for boundary 
-    int boundaryPresent; 
-
-};
-
-
-
-
-
-
-
 
 
 /**
@@ -459,6 +411,19 @@ int isInArrayList(ArrayList *list, struct coordinates target) {
 }
 
 /**
+ * method to initialize the arraylist 
+*/
+void initArrayList(ArrayList *list) {
+    list->size = 0;
+    list->capacity = 10; // Initial capacity, can be adjusted as needed
+    list->array = (struct coordinates *)malloc(list->capacity * sizeof(struct coordinates));
+    if (list->array == NULL) {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(1);
+    }
+}
+
+/**
  * method to add an element to the arraylist 
 */
 void addElement(ArrayList *list, struct coordinates element) {
@@ -614,18 +579,7 @@ int exploreBehind(struct coordinates cc, struct Queue* queue) {
 }
 
 
-/**
- * method to initialize the arraylist 
-*/
-void initArrayList(ArrayList *list) {
-    list->size = 0;
-    list->capacity = 10; // Initial capacity, can be adjusted as needed
-    list->array = (struct coordinates *)malloc(list->capacity * sizeof(struct coordinates));
-    if (list->array == NULL) {
-        fprintf(stderr, "Memory allocation failed\n");
-        exit(1);
-    }
-}
+
 
 
 //prototype for BFS method

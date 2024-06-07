@@ -18,7 +18,7 @@ void coverExtremities() {
             {
             case 0:
                 printf("avoiding up collision \n");
-                avoidCollisions(1, current, destination, xDistanceToCover, yDistanceToCover);  //if a collision is detected then avoid collision method is called
+                avoidCollisions(1, current, destination, 0, 100);  //if a collision is detected then avoid collision method is called
                 break;
             case 1:
                 current = moveRobot(current, 0);  //if the coordinate is empty then we move the robot up. 
