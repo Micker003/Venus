@@ -2,8 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-#include "embeddedImplementationInterface.c"
+#include "embeddedInitialImp.h"
 #include "robotAlgorithmBFSTest.h"
+#include <limits.h>
 
 
 #define initialx 0
@@ -28,7 +29,7 @@ struct Queue* createQueue(unsigned capacity)
 // Queue is full when size becomes equal to the capacity
 int isFull(struct Queue* queue)
 {
-    return (queue->size == queue->capacity);
+    return (queue->size == (int)(queue->capacity));
 }
 
 // Queue is empty when size is 0
@@ -351,7 +352,7 @@ struct squareType checkSquare() {
     struct IRSensors IR;
 
     int cliffDistance;
-    cliffDistance = fwdDistanceData();
+    cliffDistance = forwardDistanceData();
     printf("CliffDistance = %d \n", cliffDistance);
     //distance of each move is assumed to be 5 cm 
     if (cliffDistance < 50) {
@@ -378,7 +379,7 @@ struct squareType checkSquare() {
     printf("boundary present = %d \n", s.boundaryPresent);
     printf("hole present = %d \n", s.holePresent);
 
-    int blockHeight = dwdDistanceData();
+    int blockHeight = downwardDistanceData();
     //height of smallest block assumed to be 3 cm and height of sensor above ground assumed as 6 cm
     if (blockHeight < 20) {              //checking for big block
         struct color colorstr = colorSensor();
