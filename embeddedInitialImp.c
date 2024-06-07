@@ -6,6 +6,7 @@
 #include "color.h"
 #include "embeddedInitialImp.h"
 #include <libpynq.h>
+#include <stepper.h>
 
 
 
@@ -134,9 +135,9 @@ struct color colorSensor() {
 	int integration_time_ms = 60;
 	tcsReading color_reading = color_read(sensor, integration_time_ms);
     struct color color;
-	color.red = color_reading.red; 
-	color.green = color_reading.green; 
-	color.blue = color_reading.blue; 
+	color.R = color_reading.red; 
+	color.G = color_reading.green; 
+	color.B = color_reading.blue; 
     return color;
 }
 
@@ -151,23 +152,6 @@ struct IRSensors measureIRData() {
     IRData.sensor4Val = IR_read(ADC2);
     return IRData;
 }
-
-/**
- * move the robot forward or backward, takes as input 0 or 1, 0 indicates backwards and 1 indicates forward. 
-*/
-void moveRobotForwardOrBackward(int direction) {
-    //TODO
-    if (direction == 0) {
-        rotateRobot(2);
-        moveRobotForwardOrBackward(1);
-    } else {
-        stepper_enable();
-	stepper_set_speed(5000,5000);
-	stepper_steps(800,800);
-	stepper_disable();
-    }
-}
-
 /**
  * Change the direction of the robot
 */
@@ -178,7 +162,8 @@ void rotateRobot(int direction) {
         //rotate right by 90 degrees
 	stepper_enable();
 	stepper_set_speed(50000,50000);
-	stepper_steps(-500,450);
+	stepper_steps(-620,620);
+  sleep_msec(5000);
 	stepper_disable();
         //TODO
         break;
@@ -187,7 +172,8 @@ void rotateRobot(int direction) {
         //rotate left by 90 degrees
 	stepper_enable();
 	stepper_set_speed(50000,50000);
-	stepper_steps(500,-450);
+	stepper_steps(620,-620);
+  sleep_msec(5000);
 	stepper_disable();
         //TODO
         break;
@@ -195,10 +181,27 @@ void rotateRobot(int direction) {
         case 2:
         //rotate robot 180 degrees (backwards)
 	stepper_enable();
+
 	stepper_set_speed(50000,50000);
-	stepper_steps(1000,-1000);
+	stepper_steps(-1295,1295);
+
+  sleep_msec(5000);
 	stepper_disable();
         //TODO
         break;
+    }
+}
+
+void moveRobotForwardOrBackward(int direction) {
+    //TODO
+    if (direction == 0) {
+        rotateRobot(2);
+        moveRobotForwardOrBackward(1);
+    } else {
+        stepper_enable();
+	stepper_set_speed(20000,20000);
+	stepper_steps(-800,-800);
+  sleep_msec(2000);
+	stepper_disable();
     }
 }
