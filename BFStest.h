@@ -15,11 +15,21 @@ typedef struct {
     int rear;
 } Queue;
 
-void initQueue(Queue* q);
-int isEmpty(Queue* q);
-int isFull(Queue* q);
-void enqueue(Queue* q, struct coordinates value);
-struct coordinates dequeue(Queue* q);
-void printQueue(Queue* q);
+// Struct for ArrayList structure
+typedef struct {
+    struct coordinates *array;
+    size_t size;
+    size_t capacity;
+} ArrayList;
+
+struct Queue* createQueue(unsigned capacity);
+int isFull(struct Queue* queue);
+int isEmpty(struct Queue* queue);
+void enqueue(struct Queue* queue, struct coordinates item);
+struct coordinates dequeue(struct Queue* queue);
+struct coordinates front(struct Queue* queue);
+struct coordinates rear(struct Queue* queue);
+
+
 
 #endif // BFSTEST_H

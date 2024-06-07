@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include "embeddedInitialImp.c"
+#include "BFStest.h"
 #include "AlgorithmTestCases.c"
 
 #define initialx 0
