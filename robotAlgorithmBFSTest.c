@@ -1,10 +1,14 @@
+#include <limits.h>
+#include <libpynq.h>
+#include <stepper.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
 #include "embeddedInitialImp.h"
 #include "robotAlgorithmBFSTest.h"
-#include <limits.h>
+
 
 
 #define initialx 0
@@ -290,7 +294,7 @@ void robotNavigation(struct coordinates current, struct coordinates destination)
                 break;
             case 1:
                 current = moveRobot(current, 1);
-                break;
+                //break;
             }
         }
     } else if (xDistanceToCover < 0) {
@@ -586,6 +590,42 @@ int exploreBehind(struct coordinates cc, struct Queue* queue) {
 //prototype for BFS method
 void BFS(struct coordinates currentCoordinate);
 
+
+ /**
+ * BFS search algorithm to search to explore the entire grid
+*/
+void BFS(struct coordinates currentCoordinate) {
+    
+    int duplication_check = 0;
+    struct coordinates beingExplored = currentCoordinate; 
+    struct coordinates navigateTo;
+    struct Queue* queue = createQueue(1000);   //create a BFS queue
+   
+    printf("BFS STARTED\n");
+
+    //while loop which runs until a duplicate is found or until the time limit has been reached
+    while (duplication_check < 1) {
+        printf("Cooridnate BeingExplored = (%d, %d, %d)\n", beingExplored.x, beingExplored.y, beingExplored.objectAtLocation);
+        //explore all of the squares adjacent to currently occupied square
+        duplication_check = exploreForward(beingExplored, queue);
+        duplication_check = duplication_check + exploreRight(beingExplored, queue);
+        duplication_check = duplication_check + exploreLeft(beingExplored, queue);
+        duplication_check = duplication_check + exploreBehind(beingExplored, queue); //if duplication_check > 0 break while loop
+
+
+        navigateTo = dequeue(queue);        //dequeue one of the visited coordinates from the queue and 
+        //add it to a new struct called coordinates
+        printf("coordinates (%d, %d, %d) dequeued from queue for Navigation\n\n", navigateTo.x, navigateTo.y, navigateTo.objectAtLocation);
+        robotNavigation(beingExplored, navigateTo);
+        beingExplored = navigateTo; //once the robotNavigation() method has been executed set the robot's beingExplored coordinate to the navigateTo coordinate. 
+        
+    }
+    printf("duplication check = %d", duplication_check);
+    printf("Duplicate has been found\n");
+    
+}
+
+
 /**
 * primary control method calling other mehtods in program 
 * @pre nil
@@ -593,12 +633,18 @@ void BFS(struct coordinates currentCoordinate);
 * @return int   
 */
 int main(void) {
+    printf("Hi");
+    pynq_init();
+    embeddedInit();
+    stepper_init();
     struct coordinates currentCoordinate;
     //create the initial coordinate which can be assumed as empty
     currentCoordinate.x = 0;
     currentCoordinate.y = 0;
 
     currentCoordinate.objectAtLocation = 0;
+    
+  
 
     initArrayList(&list);
     addElement(&list, currentCoordinate);
@@ -615,42 +661,9 @@ int main(void) {
     //send the arraylist to the MQTT server for visualization
     //TODO
     //After sending the data this code terminates
+    stepper_destroy();
+    pynq_destroy();
     return 0;
-}
-
- /**
- * BFS search algorithm to search to explore the entire grid
-*/
-void BFS(struct coordinates currentCoordinate) {
-    int i = 0;
-    int duplication_check = 0;
-    struct coordinates beingExplored = currentCoordinate; 
-    struct coordinates navigateTo;
-    struct Queue* queue = createQueue(1000);   //create a BFS queue
-   
-    printf("BFS STARTED\n");
-
-    //while loop which runs until a duplicate is found or until the time limit has been reached
-    while (duplication_check < 1 || i < 5) {
-        printf("Cooridnate BeingExplored = (%d, %d, %d)\n", beingExplored.x, beingExplored.y, beingExplored.objectAtLocation);
-        //explore all of the squares adjacent to currently occupied square
-        duplication_check = exploreForward(beingExplored, queue);
-        duplication_check = duplication_check + exploreRight(beingExplored, queue);
-        duplication_check = duplication_check + exploreLeft(beingExplored, queue);
-        duplication_check = duplication_check + exploreBehind(beingExplored, queue); //if duplication_check > 0 break while loop
-
-
-        navigateTo = dequeue(queue);        //dequeue one of the visited coordinates from the queue and 
-        //add it to a new struct called coordinates
-        printf("coordinates (%d, %d, %d) dequeued from queue for Navigation\n\n", navigateTo.x, navigateTo.y, navigateTo.objectAtLocation);
-        robotNavigation(beingExplored, navigateTo);
-        beingExplored = navigateTo; //once the robotNavigation() method has been executed set the robot's beingExplored coordinate to the navigateTo coordinate. 
-        i++; 
-        
-    }
-
-    printf("Duplicate has been found\n");
-    
 }
 
 
