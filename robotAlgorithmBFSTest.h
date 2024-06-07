@@ -77,4 +77,4 @@ int main(void);
 void BFS(struct coordinates currentCoordinate);
 
 
-#endif // BFSTEST_H
+#endif // ROBOTALGORITHMBFSTEST_H
