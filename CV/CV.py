@@ -23,7 +23,6 @@ log_file = open("colorrecognition.log", "w")
 
 
 while (True):
-
     # Capture the video frame
     # by frame
     ret, frame = vid.read()
@@ -33,8 +32,8 @@ while (True):
     # Define lower and upper bounds for the color you want to detect
     colornames = ['black', 'blue', 'green', 'red', 'red_top', 'white']
     display_colors = [(60, 60, 60), (255, 0, 0), (0, 255, 0), (0, 0, 255), (0, 0, 255), (255, 255, 255)]
-    lower_bound = np.array([[0,0,0],[90,satbottom,vbottom],[45, satbottom, vbottom],[0,satbottom,vbottom],[165,satbottom,vbottom],[0,0,170]])
-    upper_bound = np.array([[180,70,70],[120,256,256],[75, 256, 256], [10, 256, 256], [180, 256, 256], [180, 60, 256]])
+    lower_bound = np.array([[0,0,0],[90,satbottom,vbottom],[45, 75, vbottom],[0,satbottom,vbottom],[165,satbottom,vbottom],[0,0,140]])
+    upper_bound = np.array([[180,70,80],[120,256,256],[85, 256, 256], [10, 256, 256], [180, 256, 256], [180, 60, 256]])
 
     # Create an array of binary masks of pixels that fall within the specified color range
     hsv_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
@@ -53,16 +52,20 @@ while (True):
             max_contoursize[i] = max([cv2.contourArea(cnt) for cnt in contours])
             total_contoursize[i] = sum([cv2.contourArea(cnt) for cnt in contours])
 
-    max_contoursize[3] = sum(max_contoursize[3:4]) # combine the two reds
+    print(max_contoursize)
+    print(total_contoursize)
+    max_contoursize[3] = max_contoursize[3] + max_contoursize[4] # combine the two reds
     max_contoursize[4] = 0 # remove the second red
+    total_contoursize[3] = total_contoursize[3] + total_contoursize[4] # combine the two reds
+    total_contoursize[4] = 0 # remove the second red
 
     print(max_contoursize)
     print(total_contoursize)
 
     instadominate_edge = 40000
     # Determine the dominant color
-    if max(max_contoursize) > instadominate_edge:
-        dominate_color = colornames[max_contoursize.index(max(max_contoursize))]
+    if max(max_contoursize[0:4]) > instadominate_edge: # black and white are excluded from the dominant color
+        dominate_color = colornames[max_contoursize.index(max(max_contoursize[0:4]))]
     else:
         dominate_color = colornames[total_contoursize.index(max(total_contoursize))]
 
@@ -74,7 +77,7 @@ while (True):
     # Write the dominant color to the state file
     state_file = open("color.txt", "w")
     if colornames.index(dominate_color) <= 3:
-        state_file.write(colornames.index(dominate_color))
+        state_file.write(str(colornames.index(dominate_color)))
     elif colornames.index(dominate_color) == 5:
         state_file.write("4")
     else:
