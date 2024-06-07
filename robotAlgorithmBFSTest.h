@@ -73,7 +73,6 @@ int exploreForward(struct coordinates cc, struct Queue* queue);
 int exploreRight(struct coordinates cc, struct Queue* queue);
 int exploreLeft(struct coordinates cc, struct Queue* queue);
 int exploreBehind(struct coordinates cc, struct Queue* queue);
-int main(void);
 void BFS(struct coordinates currentCoordinate);
 
 
