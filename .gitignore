@@ -55,3 +55,7 @@ dkms.conf
 libpynq-5EID0-2023-v0.3.0
 cmake-build-debug
 .idea/
+
+# Temporary files and logs
+*.log
+colorrecognition.log
