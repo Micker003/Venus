@@ -1,5 +1,6 @@
 {
     "files.associations": {
-        "bfstest.h": "c"
+        "bfstest.h": "c",
+        "esp_2": "c"
     }
 }

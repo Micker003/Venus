@@ -385,16 +385,16 @@ struct squareType checkSquare() {
     if (blockHeight < 20) {              //checking for big block
         struct color colorstr = colorSensor();
         int color = convertToColor(colorstr);
-        s.blockColor = color; 
-        s.blockType = 5;
+       
+        s.blockType = 50 + color;
     } if (blockHeight < 30 && blockHeight > 20) {
         struct color colorstr = colorSensor();
         int color = convertToColor(colorstr);
-        s.blockColor = color; 
-        s.blockType = 4;
+       
+        s.blockType = 40 + color;
     } else {
-        s.blockColor = 0; //0 represents no color 
-        s.blockType = 6; //6 represents no block
+        
+        s.blockType = 60; //6 represents no block
     }
 
     printf("blockType = %d \n", s.blockType);
@@ -453,8 +453,8 @@ int returnSquareProperty(struct squareType s) {
         property = 2; // 2 represents cliff
     } else if (s.holePresent == 1) {
         property = 3; // 3 represents hole
-    } else if (s.blockType != 6) {
-        property = 10*s.blockType + s.blockColor;
+    } else if (s.blockType != 60) {
+        property = s.blockType;
     } 
     
     printf("RETURNSQUAREPROPERTY PROPERTY = %d \n", property);
@@ -488,7 +488,7 @@ int exploreForward(struct coordinates cc, struct Queue* queue) {
         enqueue(queue, be);    //coordinate is only enqueued for further exploration if it is empty.
     }
 
-    send_message("%d, %d, %d", be.x, be.y, be.objectAtLocation);
+    send_information(be.objectAtLocation, be.x, be.y);
     addElement(&list, be);
     return check;
 }
@@ -518,7 +518,7 @@ int exploreRight(struct coordinates cc, struct Queue* queue) {
         printf("right exploration condition passed \n");
         enqueue(queue, be);
     }
-    send_message("%d, %d, %d", be.x, be.y, be.objectAtLocation);
+    send_information(be.objectAtLocation, be.x, be.y);
     addElement(&list, be);
     rotateRobot(1);
     return check;
@@ -548,7 +548,7 @@ int exploreLeft(struct coordinates cc, struct Queue* queue) {
         printf("left exploration condition passed \n");
         enqueue(queue, be);
     }
-    send_message("%d, %d, %d", be.x, be.y, be.objectAtLocation);
+    send_information(be.objectAtLocation, be.x, be.y);
     addElement(&list, be);
     rotateRobot(0);
     return check;
@@ -579,7 +579,7 @@ int exploreBehind(struct coordinates cc, struct Queue* queue) {
         printf("backward exploration condition passed \n");
         enqueue(queue, be);
     }
-    send_message("%d, %d, %d", be.x, be.y, be.objectAtLocation);
+    send_information(be.objectAtLocation, be.x, be.y);
     addElement(&list, be);
     rotateRobot(2);
     return check;

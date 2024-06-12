@@ -37,7 +37,6 @@ struct squareType {
     //blockType can be 4 for "small" || 5 for "big" || 6 for null
     int blockType; 
     //block color can be any string corresponding to the RBG color returned by embedded software method the integer represents the rgb value
-    int blockColor; 
     //parity value, 1 is true and 0 is false
     int cliffPresent;
     //parity value for hole
