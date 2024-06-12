@@ -5,6 +5,7 @@
 #include "embeddedInitialImp.h"
 #include "robotAlgorithmBFSTest.h"
 #include <limits.h>
+#include "esp_2"
 
 
 #define initialx 0
@@ -474,7 +475,7 @@ int exploreForward(struct coordinates cc, struct Queue* queue) {
     int duplication_check = isInArrayList(&list, be); 
     if(duplication_check > 0) { 
         check = 1; 
-        printf("duplicate found in arraylist\n");
+        printf("duplicate found in arraylist (forward)\n");
         return check; 
     }
     struct squareType st = checkSquare();
@@ -486,6 +487,8 @@ int exploreForward(struct coordinates cc, struct Queue* queue) {
         printf("forward enqueue condition passed\n");
         enqueue(queue, be);    //coordinate is only enqueued for further exploration if it is empty.
     }
+
+    send_message("%d, %d, %d", be.x, be.y, be.objectAtLocation);
     addElement(&list, be);
     return check;
 }
@@ -502,7 +505,7 @@ int exploreRight(struct coordinates cc, struct Queue* queue) {
     int duplication_check = isInArrayList(&list, be);
     if(duplication_check > 0) {
         check = 1;
-        printf("duplicate found in arraylist \n");
+        printf("duplicate found in arraylist (right)\n");
         return check;
     }
     rotateRobot(0);
@@ -515,6 +518,7 @@ int exploreRight(struct coordinates cc, struct Queue* queue) {
         printf("right exploration condition passed \n");
         enqueue(queue, be);
     }
+    send_message("%d, %d, %d", be.x, be.y, be.objectAtLocation);
     addElement(&list, be);
     rotateRobot(1);
     return check;
@@ -532,7 +536,7 @@ int exploreLeft(struct coordinates cc, struct Queue* queue) {
     int duplication_check = isInArrayList(&list, be);
     if(duplication_check > 0) {
         check = 1;
-        printf("duplicate found in arraylist\n");
+        printf("duplicate found in arraylist (left)\n");
         return check;
     }
     rotateRobot(1);
@@ -544,6 +548,7 @@ int exploreLeft(struct coordinates cc, struct Queue* queue) {
         printf("left exploration condition passed \n");
         enqueue(queue, be);
     }
+    send_message("%d, %d, %d", be.x, be.y, be.objectAtLocation);
     addElement(&list, be);
     rotateRobot(0);
     return check;
@@ -561,7 +566,7 @@ int exploreBehind(struct coordinates cc, struct Queue* queue) {
     int duplication_check = isInArrayList(&list, be);
     if(duplication_check > 0) {
         check = 1;
-        printf("duplicate found in arraylist\n");
+        printf("duplicate found in arraylist (backward)\n");
         return check;
     }
     rotateRobot(2);
@@ -574,6 +579,7 @@ int exploreBehind(struct coordinates cc, struct Queue* queue) {
         printf("backward exploration condition passed \n");
         enqueue(queue, be);
     }
+    send_message("%d, %d, %d", be.x, be.y, be.objectAtLocation);
     addElement(&list, be);
     rotateRobot(2);
     return check;
@@ -622,7 +628,7 @@ int main(void) {
  * BFS search algorithm to search to explore the entire grid
 */
 void BFS(struct coordinates currentCoordinate) {
-    int i = 0;
+   
     int duplication_check = 0;
     struct coordinates beingExplored = currentCoordinate; 
     struct coordinates navigateTo;
@@ -631,13 +637,17 @@ void BFS(struct coordinates currentCoordinate) {
     printf("BFS STARTED\n");
 
     //while loop which runs until a duplicate is found or until the time limit has been reached
-    while (duplication_check < 1 || i < 5) {
+    while (duplication_check < 1) {
         printf("Cooridnate BeingExplored = (%d, %d, %d)\n", beingExplored.x, beingExplored.y, beingExplored.objectAtLocation);
         //explore all of the squares adjacent to currently occupied square
         duplication_check = exploreForward(beingExplored, queue);
+        printf("dup check fwd = %d", duplication_check);
         duplication_check = duplication_check + exploreRight(beingExplored, queue);
+        printf("dup check r = %d", duplication_check);
         duplication_check = duplication_check + exploreLeft(beingExplored, queue);
+        printf("dup check l = %d", duplication_check);
         duplication_check = duplication_check + exploreBehind(beingExplored, queue); //if duplication_check > 0 break while loop
+        printf("dup check bwd = %d", duplication_check);
 
 
         navigateTo = dequeue(queue);        //dequeue one of the visited coordinates from the queue and 
@@ -645,11 +655,11 @@ void BFS(struct coordinates currentCoordinate) {
         printf("coordinates (%d, %d, %d) dequeued from queue for Navigation\n\n", navigateTo.x, navigateTo.y, navigateTo.objectAtLocation);
         robotNavigation(beingExplored, navigateTo);
         beingExplored = navigateTo; //once the robotNavigation() method has been executed set the robot's beingExplored coordinate to the navigateTo coordinate. 
-        i++; 
+      
         
     }
 
-    printf("Duplicate has been found\n");
+    printf("Algorithm terminated, duplication_check = %d\n", duplication_check);
     
 }
 

@@ -99,8 +99,25 @@ void moveRobotForwardOrBackward(int direction) {
         rotateRobot(2);
         moveRobotForwardOrBackward(1);
     } else {
-        printf("move robot FORWARD  \n");
+        printf("move robot fowards\n");
     }
 }
+
+/**
+ * stepper_enable();
+	    stepper_set_speed(5000,5000);
+        struct squareType moveCheck = {0,0,0};
+
+        int i = 0;
+        int steps = 0;
+        printf("move robot FORWARD  \n");
+        while(i == 0 && steps < 800 ) {
+            moveCheck = checkSquare();
+            i = returnSquareProperty(moveCheck);
+            stepper_steps(100,100);
+            steps = steps + 10;
+        }
+        stepper_disable();
+ */
 
 
