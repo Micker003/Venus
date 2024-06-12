@@ -5,7 +5,7 @@
 #include "embeddedInitialImp.h"
 #include "robotAlgorithmBFSTest.h"
 #include <limits.h>
-#include "esp_2"
+#include "esp_2.h"
 
 
 #define initialx 0
@@ -618,9 +618,7 @@ int main(void) {
 
     BFS(currentCoordinate);
 
-    //send the arraylist to the MQTT server for visualization
-    //TODO
-    //After sending the data this code terminates
+    
     return 0;
 }
 
@@ -654,6 +652,7 @@ void BFS(struct coordinates currentCoordinate) {
         //add it to a new struct called coordinates
         printf("coordinates (%d, %d, %d) dequeued from queue for Navigation\n\n", navigateTo.x, navigateTo.y, navigateTo.objectAtLocation);
         robotNavigation(beingExplored, navigateTo);
+        //make robotNavigation return coordinate, if forward is empty return integer using squaretype method, then add it to the arraylist below.
         beingExplored = navigateTo; //once the robotNavigation() method has been executed set the robot's beingExplored coordinate to the navigateTo coordinate. 
       
         
