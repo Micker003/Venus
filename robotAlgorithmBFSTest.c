@@ -6,6 +6,8 @@
 #include "robotAlgorithmBFSTest.h"
 #include <limits.h>
 #include "esp_2.h"
+#include <libpynq.h>
+#include <stepper.h>
 
 
 #define initialx 0
@@ -327,13 +329,13 @@ void robotNavigation(struct coordinates current, struct coordinates destination)
  */
 int convertToColor(struct color color) {
     // Check for the presence of a dominant color
-    if (color.R > 150 && color.R > color.G && color.R > color.B) {
+    if (color.red > 150 && color.red > color.green && color.red > color.blue) {
         return 1; //1 represents red
-    } else if (color.G > 150 && color.G > color.R && color.G > color.B) {
+    } else if (color.green > 150 && color.green > color.red && color.green > color.blue) {
         return 2; //2 represents green
-    } else if (color.B > 150 && color.B > color.R && color.B > color.G) {
+    } else if (color.blue > 150 && color.blue > color.red && color.blue > color.green) {
         return 3; //3 represents blue
-    } else if (color.R > 200 && color.G > 200 && color.B > 200) {
+    } else if (color.red > 200 && color.green > 200 && color.blue > 200) {
         return 4; //4 represents white
     } else {
         return 5; // 5 represents black
@@ -382,7 +384,7 @@ struct squareType checkSquare() {
     } else if (IR.sensor1Val < IRthreshold || IR.sensor2Val < IRthreshold || IR.sensor3Val < IRthreshold || IR.sensor4Val < IRthreshold) {
         s.boundaryPresent = 0; 
         s.holePresent = 1;
-        i = 10
+        i = 10;
     } else {
         s.boundaryPresent = 0;
         s.holePresent = 0;
@@ -617,6 +619,14 @@ int main(void) {
     currentCoordinate.y = 0;
 
     currentCoordinate.objectAtLocation = 0;
+    
+    //initializing stuff
+    pynq_init();
+    stepper_init();
+    embeddedInit();
+    switchbox_set_pin(IO_AR0, SWB_UART0_RX);
+    switchbox_set_pin(IO_AR1, SWB_UART0_TX);
+    uart_init(UART0);
 
     initArrayList(&list);
     addElement(&list, currentCoordinate);
@@ -662,6 +672,9 @@ void BFS(struct coordinates currentCoordinate) {
 
         navigateTo = dequeue(queue);        //dequeue one of the visited coordinates from the queue and 
         //add it to a new struct called coordinates
+        if (naivateTo.x = INT_MIN) {
+            duplication_check = 10;
+        }
         printf("coordinates (%d, %d, %d) dequeued from queue for Navigation\n\n", navigateTo.x, navigateTo.y, navigateTo.objectAtLocation);
         robotNavigation(beingExplored, navigateTo);
         //make robotNavigation return coordinate, if forward is empty return integer using squaretype method, then add it to the arraylist below.

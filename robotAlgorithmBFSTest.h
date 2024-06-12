@@ -7,7 +7,7 @@
 
 #define MAX_SIZE 100
 
-int IRthreshold = 260;  //threshold for which IR sensor data is determined to be color black
+int IRthreshold = 269;  //threshold for which IR sensor data is determined to be color black
 
 //create a struct called coordinates which can maintain the location of the robot
 struct coordinates {
