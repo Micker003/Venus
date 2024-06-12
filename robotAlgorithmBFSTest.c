@@ -5,6 +5,7 @@
 #include "embeddedInitialImp.h"
 #include "robotAlgorithmBFSTest.h"
 #include <limits.h>
+#include "esp_2"
 
 
 #define initialx 0
@@ -486,6 +487,8 @@ int exploreForward(struct coordinates cc, struct Queue* queue) {
         printf("forward enqueue condition passed\n");
         enqueue(queue, be);    //coordinate is only enqueued for further exploration if it is empty.
     }
+
+    send_message("%d, %d, %d", be.x, be.y, be.objectAtLocation);
     addElement(&list, be);
     return check;
 }
@@ -515,6 +518,7 @@ int exploreRight(struct coordinates cc, struct Queue* queue) {
         printf("right exploration condition passed \n");
         enqueue(queue, be);
     }
+    send_message("%d, %d, %d", be.x, be.y, be.objectAtLocation);
     addElement(&list, be);
     rotateRobot(1);
     return check;
@@ -544,6 +548,7 @@ int exploreLeft(struct coordinates cc, struct Queue* queue) {
         printf("left exploration condition passed \n");
         enqueue(queue, be);
     }
+    send_message("%d, %d, %d", be.x, be.y, be.objectAtLocation);
     addElement(&list, be);
     rotateRobot(0);
     return check;
@@ -574,6 +579,7 @@ int exploreBehind(struct coordinates cc, struct Queue* queue) {
         printf("backward exploration condition passed \n");
         enqueue(queue, be);
     }
+    send_message("%d, %d, %d", be.x, be.y, be.objectAtLocation);
     addElement(&list, be);
     rotateRobot(2);
     return check;
