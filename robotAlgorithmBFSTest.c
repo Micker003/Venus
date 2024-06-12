@@ -351,13 +351,22 @@ struct squareType checkSquare() {
     printf("square check started\n");
     struct squareType s; 
     struct IRSensors IR;
+    int i = 0;
 
+    while (i < 3) {
+        if (i == 1) {
+            rotateRobot(3);
+        } else if (i == 2) {
+            rotateRobot(4);
+        }
+        
     int cliffDistance;
     cliffDistance = forwardDistanceData();
     printf("CliffDistance = %d \n", cliffDistance);
     //distance of each move is assumed to be 5 cm 
     if (cliffDistance < 50) {
         s.cliffPresent = 1;
+        i = 10;
     } else {
         s.cliffPresent = 0;
     }
@@ -369,9 +378,11 @@ struct squareType checkSquare() {
     if (IR.sensor1Val < IRthreshold && IR.sensor2Val < IRthreshold && IR.sensor3Val < IRthreshold && IR.sensor4Val < IRthreshold) {
         s.boundaryPresent = 1; //if all four sensors indicate the surface is black we return true for boundary present
         s.holePresent = 0;
+        i = 10;
     } else if (IR.sensor1Val < IRthreshold || IR.sensor2Val < IRthreshold || IR.sensor3Val < IRthreshold || IR.sensor4Val < IRthreshold) {
         s.boundaryPresent = 0; 
         s.holePresent = 1;
+        i = 10
     } else {
         s.boundaryPresent = 0;
         s.holePresent = 0;
@@ -387,19 +398,20 @@ struct squareType checkSquare() {
         int color = convertToColor(colorstr);
        
         s.blockType = 50 + color;
+        i = 10;
     } if (blockHeight < 30 && blockHeight > 20) {
         struct color colorstr = colorSensor();
         int color = convertToColor(colorstr);
-       
         s.blockType = 40 + color;
+        i = 10;
     } else {
-        
         s.blockType = 60; //6 represents no block
+    }
+        i++;
     }
 
     printf("blockType = %d \n", s.blockType);
     return s; 
-
 }
 
 //checks if a given coordinate is inside arrayList
