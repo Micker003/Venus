@@ -94,73 +94,73 @@ char* glue(int ID, int x, int y) {
 }
 
 void send_information(int ID, int x, int y){
-    char* output = glue(ID, int x, int y);
+    char* output = glue(ID, x, y);
     printf("Message: %s\n", output);
     send_message(output);
     free(output); // Free allocated memory
 }
 
 void receive_information(int *ID, int *x, int *y) {
-    char *message = receive_message(ID, int x, int y);
+    char *message = receive_message(ID, x, y);
     if (message != NULL) {
         printf("Received message: %d, %d, %d\n", *ID, *x, *y);
         free(message); // Free allocated memory
     }
 }
 
-int main() {
-    printf("Boom\n");
-    switchbox_init();
-    switchbox_set_pin(IO_AR0, SWB_UART0_RX);
-    switchbox_set_pin(IO_AR1, SWB_UART0_TX);
+// int main() {
+//     printf("Boom\n");
+//     switchbox_init();
+//     switchbox_set_pin(IO_AR0, SWB_UART0_RX);
+//     switchbox_set_pin(IO_AR1, SWB_UART0_TX);
 
-    // Initialize UART 0
-    uart_init(UART0);
-    // Flush FIFOs of UART 0
-    uart_reset_fifos(UART0);
+//     // Initialize UART 0
+//     uart_init(UART0);
+//     // Flush FIFOs of UART 0
+//     uart_reset_fifos(UART0);
 
-    fcntl(0, F_SETFL, fcntl(0, F_GETFL) | O_NONBLOCK);
+//     fcntl(0, F_SETFL, fcntl(0, F_GETFL) | O_NONBLOCK);
 
-    // struct coordinates currentCoordinate;
-    // struct coordinates receivedCoordinates;
-    int currentX;
-    int currentY;
-    int currentID;
+//     // struct coordinates currentCoordinate;
+//     // struct coordinates receivedCoordinates;
+//     int currentX;
+//     int currentY;
+//     int currentID;
 
-    int receivedX;
-    int receivedY;
-    // int receivedID;
+//     int receivedX;
+//     int receivedY;
+//     // int receivedID;
 
-    // Create the initial coordinate which can be assumed as empty
-    currentX = 123;
-    currentY = 684;
-    currentID = 0;
-    int ID = 0;
+//     // Create the initial coordinate which can be assumed as empty
+//     currentX = 123;
+//     currentY = 684;
+//     currentID = 0;
+//     int ID = 0;
 
-    bool readyToSendInfo = true;
+//     bool readyToSendInfo = true;
 
-    while(true){
-        char ch;
-        if (read(STDIN_FILENO, &ch, 1) == 1) {
-            readyToSendInfo = true;
-        }
+//     while(true){
+//         char ch;
+//         if (read(STDIN_FILENO, &ch, 1) == 1) {
+//             readyToSendInfo = true;
+//         }
 
-        if(uart_has_data(UART0)){
-            receive_information(&ID, &receivedX, &receivedY);
-            printf("Received message: %d, %d, %d\n", ID, x, y);
-        }
-        else if (readyToSendInfo){
-            send_information(ID, currentCoordinate);
-            readyToSendInfo = false;
-        }
-    }
+//         if(uart_has_data(UART0)){
+//             receive_information(&ID, &receivedX, &receivedY);
+//             printf("Received message: %d, %d, %d\n", ID, x, y);
+//         }
+//         else if (readyToSendInfo){
+//             send_information(ID, currentCoordinate);
+//             readyToSendInfo = false;
+//         }
+//     }
 
-    printf("Done\n");
+//     printf("Done\n");
 
-    fflush(NULL);
-    uart_reset_fifos(UART0);
-    uart_destroy(UART0);
-    // Clean up after use
-    pynq_destroy();
-    return EXIT_SUCCESS;
-}
+//     fflush(NULL);
+//     uart_reset_fifos(UART0);
+//     uart_destroy(UART0);
+//     // Clean up after use
+//     pynq_destroy();
+//     return EXIT_SUCCESS;
+// }
