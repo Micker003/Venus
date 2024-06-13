@@ -29,8 +29,9 @@ int main(void) {
     
     pynq_init();
     stepper_init();
-    embeddedInit();
     stepper_enable();
+    embeddedInit();
+
 
     rotateRobot(0);
     rotateRobot(1);
