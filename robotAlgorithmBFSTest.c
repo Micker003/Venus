@@ -640,7 +640,6 @@ int main(void) {
 
     BFS(currentCoordinate);
 
-    
     return 0;
 }
 
@@ -661,28 +660,28 @@ void BFS(struct coordinates currentCoordinate) {
         printf("Cooridnate BeingExplored = (%d, %d, %d)\n", beingExplored.x, beingExplored.y, beingExplored.objectAtLocation);
         //explore all of the squares adjacent to currently occupied square
         duplication_check = exploreForward(beingExplored, queue);
-        printf("dup check fwd = %d", duplication_check);
+        printf("dup check fwd = %d \n", duplication_check);
         duplication_check = duplication_check + exploreRight(beingExplored, queue);
-        printf("dup check r = %d", duplication_check);
+        printf("dup check r = %d \n", duplication_check);
         duplication_check = duplication_check + exploreLeft(beingExplored, queue);
-        printf("dup check l = %d", duplication_check);
+        printf("dup check l = %d \n", duplication_check);
         duplication_check = duplication_check + exploreBehind(beingExplored, queue); //if duplication_check > 0 break while loop
-        printf("dup check bwd = %d", duplication_check);
+        printf("dup check bwd = %d \n", duplication_check);
 
 
         navigateTo = dequeue(queue);        //dequeue one of the visited coordinates from the queue and 
         //add it to a new struct called coordinates
-        if (naivateTo.x = INT_MIN) {
+        if (navigateTo.x < -10000) {
             duplication_check = 10;
         }
-        printf("coordinates (%d, %d, %d) dequeued from queue for Navigation\n\n", navigateTo.x, navigateTo.y, navigateTo.objectAtLocation);
+        printf("coordinates (%d, %d, %d) dequeued from queue for Navigation\n", navigateTo.x, navigateTo.y, navigateTo.objectAtLocation);
         robotNavigation(beingExplored, navigateTo);
         //make robotNavigation return coordinate, if forward is empty return integer using squaretype method, then add it to the arraylist below.
         beingExplored = navigateTo; //once the robotNavigation() method has been executed set the robot's beingExplored coordinate to the navigateTo coordinate. 
       
         
     }
-
+   
     printf("Algorithm terminated, duplication_check = %d\n", duplication_check);
     
 }
