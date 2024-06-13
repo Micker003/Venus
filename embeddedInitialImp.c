@@ -223,16 +223,36 @@ void rotateRobot(int direction) {
         break;
 
 		case 3:
-		//rotate robot right 45 degrees 
+		//rotate robot right 15.625 degrees 
 		//stepper_enable();
-		printf("rotate 45 right\n");
+		//printf("rotate 15.625 right\n");
 		stepper_set_speed(30000,30000);
-		stepper_steps(-312.5,312.5);
+		stepper_steps(-15.625,-15.625);
 		//stepper_disable();
 		sleep_msec(1000);
 		break;
 
 		case 4:
+		//rotate robot left 15.625 degrees
+		//stepper_enable();
+		//printf("rotate 45 left\n");
+		stepper_set_speed(30000,30000);
+		stepper_steps(15.625,-15.625);
+		//stepper_disable();
+		sleep_msec(1000);
+		break;
+
+		case 5:
+		//rotate robot right 45 degrees 
+		//stepper_enable();
+		printf("rotate 45 right\n");
+		stepper_set_speed(30000,30000);
+		stepper_steps(-312.5,-312.5);
+		//stepper_disable();
+		sleep_msec(1000);
+		break;
+
+		case 6:
 		//rotate robot left 45 degrees
 		//stepper_enable();
 		printf("rotate 45 left\n");
