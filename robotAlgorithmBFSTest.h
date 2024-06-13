@@ -34,7 +34,7 @@ struct Queue {
 
 //struct for the properties of a particular square as interpreted by sensor data
 struct squareType {
-    //blockType can be 4 for "small" || 5 for "big" || 6 for null
+    //blockType can be 40 for "small" || 50 for "big" || 60 for null
     int blockType; 
     //block color can be any string corresponding to the RBG color returned by embedded software method the integer represents the rgb value
     //parity value, 1 is true and 0 is false
@@ -68,10 +68,10 @@ int convertToColor(struct color color);
 struct squareType checkSquare();
     
 int returnSquareProperty(struct squareType s);
-int exploreForward(struct coordinates cc, struct Queue* queue);
-int exploreRight(struct coordinates cc, struct Queue* queue);
-int exploreLeft(struct coordinates cc, struct Queue* queue);
-int exploreBehind(struct coordinates cc, struct Queue* queue);
+void exploreForward(struct coordinates cc, struct Queue* queue);
+void exploreRight(struct coordinates cc, struct Queue* queue);
+void exploreLeft(struct coordinates cc, struct Queue* queue);
+void exploreBehind(struct coordinates cc, struct Queue* queue);
 void BFS(struct coordinates currentCoordinate);
 
 
