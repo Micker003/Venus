@@ -496,18 +496,21 @@
     * adds the coordinate explored to the array
     * cc represents the current coordinates and be represents the coordinate being explored
     */
-    int exploreForward(struct coordinates cc, struct Queue* queue) {
+
+    void exploreForward(struct coordinates cc, struct Queue* queue) {
         printf("forward exploration started\n");
 
-        int check = 0;
+        //int check = 0;
         struct coordinates be = cc;
         be.y = cc.y + 1;
+        /*
         int duplication_check = isInArrayList(&list, be); 
         if(duplication_check > 0) { 
             check = 1; 
             printf("duplicate found in arraylist (forward)\n");
             return check; 
         }
+        */
         struct squareType st = checkSquare();
         int propertyAtCoordinate;
         propertyAtCoordinate = returnSquareProperty(st);
@@ -520,24 +523,25 @@
 
         send_information(be.objectAtLocation, be.x, be.y);
         addElement(&list, be);
-        return check;
     }
 
     /**
     * method to explore the square to the right of the currently occupied square
     * adds the coordinate explored to the array
     */
-    int exploreRight(struct coordinates cc, struct Queue* queue) {
+    void exploreRight(struct coordinates cc, struct Queue* queue) {
         printf("RIGHT EXPLORATION STARTED\n");
-        int check = 0;
+        //int check = 0;
         struct coordinates be = cc;
         be.x = cc.x + 1;
-        int duplication_check = isInArrayList(&list, be);
+        //int duplication_check = isInArrayList(&list, be);
+        /*
         if(duplication_check > 0) {
             check = 1;
             printf("duplicate found in arraylist (right)\n");
             return check;
         }
+        */
         rotateRobot(0);
         struct squareType st = checkSquare();
         int propertyAtCoordinate;
@@ -551,24 +555,26 @@
         send_information(be.objectAtLocation, be.x, be.y);
         addElement(&list, be);
         rotateRobot(1);
-        return check;
+        //return check;
     }
 
     /**
     * method to explore the square to the left of the currently occupied square
     * adds the coordinate explored to the array
     */
-    int exploreLeft(struct coordinates cc, struct Queue* queue) {
+    void exploreLeft(struct coordinates cc, struct Queue* queue) {
         printf("LEFT EXPLORATION STARTED\n");
-        int check = 0;
+        //int check = 0;
         struct coordinates be = cc;
         be.x = cc.x - 1; 
+        /*
         int duplication_check = isInArrayList(&list, be);
         if(duplication_check > 0) {
             check = 1;
             printf("duplicate found in arraylist (left)\n");
             return check;
         }
+        */
         rotateRobot(1);
         struct squareType st = checkSquare();
         int propertyAtCoordinate;
@@ -581,24 +587,26 @@
         send_information(be.objectAtLocation, be.x, be.y);
         addElement(&list, be);
         rotateRobot(0);
-        return check;
+        //return check;
     }
 
     /**
     * method to explore the square behind of the currently occupied square
     * adds the coordinate explored to the array
     */
-    int exploreBehind(struct coordinates cc, struct Queue* queue) {
+    void exploreBehind(struct coordinates cc, struct Queue* queue) {
         printf("BACKWARD EXPLORATION STARTED\n");
-        int check = 0;
+        //int check = 0;
         struct coordinates be = cc;
         be.y = cc.y - 1;
+        /*
         int duplication_check = isInArrayList(&list, be);
         if(duplication_check > 0) {
             check = 1;
             printf("duplicate found in arraylist (backward)\n");
             return check;
         }
+        */
         rotateRobot(2);
         struct squareType st = checkSquare();
         int propertyAtCoordinate;
@@ -612,7 +620,7 @@
         send_information(be.objectAtLocation, be.x, be.y);
         addElement(&list, be);
         rotateRobot(2);
-        return check;
+        //return check;
     }
 
 
@@ -666,28 +674,25 @@
     */
     void BFS(struct coordinates currentCoordinate) {
     
-        int duplication_check = 0;
+        int run_check = 0;
         struct coordinates beingExplored = currentCoordinate; 
         struct coordinates navigateTo;
         struct Queue* queue = createQueue(1000);   //create a BFS queue
     
         printf("BFS STARTED\n");
 
+        
         //while loop which runs until a duplicate is found or until the time limit has been reached
-        while (duplication_check < 1) {
+        while (run_check < 1) {
             printf("Cooridnate BeingExplored = (%d, %d, %d)\n", beingExplored.x, beingExplored.y, beingExplored.objectAtLocation);
             //explore all of the squares adjacent to currently occupied square
-            duplication_check = exploreForward(beingExplored, queue);
-            printf("dup check fwd = %d \n", duplication_check);
+            exploreForward(beingExplored, queue);
             sleep_msec(1000);
-            duplication_check = duplication_check + exploreRight(beingExplored, queue);
-            printf("dup check r = %d \n", duplication_check);
+            exploreRight(beingExplored, queue);
             sleep_msec(1000);
-            duplication_check = duplication_check + exploreLeft(beingExplored, queue);
-            printf("dup check l = %d \n", duplication_check);
+            exploreLeft(beingExplored, queue);
             sleep_msec(1000);
-            duplication_check = duplication_check + exploreBehind(beingExplored, queue); //if duplication_check > 0 break while loop
-            printf("dup check bwd = %d \n", duplication_check);
+            exploreBehind(beingExplored, queue); //if duplication_check > 0 break while loop
             sleep_msec(1000);
 
             // Verify that currentCoordinate has been added to the ArrayList
@@ -696,11 +701,17 @@
                 i, list.array[i].x, list.array[i].y, list.array[i].objectAtLocation);
                 }
 
+            if (isEmpty(queue)) {
+                run_check = 1;
+            }
+
             navigateTo = dequeue(queue);        //dequeue one of the visited coordinates from the queue and 
             //add it to a new struct called coordinates
+            /*
             if (navigateTo.x < -10000) {
                 duplication_check = 10;
             }
+            */
             printf("coordinates (%d, %d, %d) dequeued from queue for Navigation\n", navigateTo.x, navigateTo.y, navigateTo.objectAtLocation);
             robotNavigation(beingExplored, navigateTo);
             //make robotNavigation return coordinate, if forward is empty return integer using squaretype method, then add it to the arraylist below.
@@ -709,7 +720,7 @@
             
         }
     
-        printf("Algorithm terminated, duplication_check = %d\n", duplication_check);
+        printf("Algorithm terminated, run_check = %d\n", run_check);
         
     }
 
