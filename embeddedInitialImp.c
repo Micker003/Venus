@@ -175,7 +175,7 @@ void moveRobotForwardOrBackward(int direction) {
 	printf("move forward\n");
 	stepper_set_speed(30000,30000);
 	stepper_steps(-800,-800);
-	sleep_msec(5000);
+	sleep_msec(2000);
     }
 }
 
@@ -193,7 +193,7 @@ void rotateRobot(int direction) {
 	stepper_set_speed(30000,30000);
 	stepper_steps(-625,625);
 	//stepper_disable();
-	sleep_msec(3000);
+	sleep_msec(1000);
 
         //TODO
         break;
@@ -207,7 +207,7 @@ void rotateRobot(int direction) {
 	stepper_set_speed(30000,30000);
 	stepper_steps(625,-625);
 	//stepper_disable();
-	sleep_msec(3000);
+	sleep_msec(1000);
         //TODO
         break;
 
@@ -218,7 +218,7 @@ void rotateRobot(int direction) {
 	stepper_set_speed(30000,30000);
 	stepper_steps(1250,-1250);
 	//stepper_disable();
-	sleep_msec(3000);
+	sleep_msec(2000);
         //TODO
         break;
 
@@ -229,7 +229,7 @@ void rotateRobot(int direction) {
 		stepper_set_speed(30000,30000);
 		stepper_steps(-312.5,312.5);
 		//stepper_disable();
-		sleep_msec(2000);
+		sleep_msec(1000);
 		break;
 
 		case 4:
@@ -239,7 +239,7 @@ void rotateRobot(int direction) {
 		stepper_set_speed(30000,30000);
 		stepper_steps(312.5,-312.5);
 		//stepper_disable();
-		sleep_msec(2000);
+		sleep_msec(1000);
 		break;
     }
 }
