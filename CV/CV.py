@@ -35,6 +35,10 @@ while (True):
     lower_bound = np.array([[0,0,0],[90,satbottom,vbottom],[45, 75, vbottom],[0,satbottom,vbottom],[165,satbottom,vbottom],[0,0,140]])
     upper_bound = np.array([[180,70,80],[120,256,256],[85, 256, 256], [10, 256, 256], [180, 256, 256], [180, 60, 256]])
 
+    # Cut the top and bottom of the image
+    # The camera is 480 x 640 pixels
+    frame = frame[1:480, 1:640]
+
     # Create an array of binary masks of pixels that fall within the specified color range
     hsv_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
     masks = [cv2.inRange(hsv_frame, lower_bound[i], upper_bound[i]) for i in range(len(colornames))]

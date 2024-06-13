@@ -6,6 +6,7 @@
 #include "color.h"
 #include "embeddedInitialImp.h"
 #include <libpynq.h>
+#include <stepper.h>
 
 
 
@@ -144,11 +145,20 @@ struct color colorSensor() {
  * measure the values for all three IR sensors
 */
 struct IRSensors measureIRData() {
+	/*
     struct IRSensors IRData;
     IRData.sensor1Val = IR_read(ADC5);
     IRData.sensor2Val = IR_read(ADC4);
     IRData.sensor3Val = IR_read(ADC3);
     IRData.sensor4Val = IR_read(ADC2);
+    return IRData;
+	*/
+	 //all four sensors having a value of above 280 should be interpreted by the algorithm as no hold or boundary being present 
+    struct IRSensors IRData;
+    IRData.sensor1Val = 280; //above 268 is white 
+    IRData.sensor2Val = 280; //below 268 is black 
+    IRData.sensor3Val = 280;
+    IRData.sensor4Val = 280;
     return IRData;
 }
 
@@ -161,10 +171,11 @@ void moveRobotForwardOrBackward(int direction) {
         rotateRobot(2);
         moveRobotForwardOrBackward(1);
     } else {
-        stepper_enable();
-	stepper_set_speed(5000,5000);
-	stepper_steps(800,800);
-	stepper_disable();
+        //stepper_enable();
+	printf("move forward\n");
+	stepper_set_speed(30000,30000);
+	stepper_steps(-800,-800);
+	sleep_msec(5000);
     }
 }
 
@@ -176,45 +187,59 @@ void rotateRobot(int direction) {
     switch(d) {
         case 0:
         //rotate right by 90 degrees
-	stepper_enable();
-	stepper_set_speed(50000,50000);
-	stepper_steps(-500,450);
-	stepper_disable();
+
+	printf("rotate right\n");
+	//stepper_enable();
+	stepper_set_speed(30000,30000);
+	stepper_steps(-625,625);
+	//stepper_disable();
+	sleep_msec(3000);
+
         //TODO
         break;
         
         case 1:
         //rotate left by 90 degrees
-	stepper_enable();
-	stepper_set_speed(50000,50000);
-	stepper_steps(500,-450);
-	stepper_disable();
+	
+	printf("rotate left \n");
+	//stepper_enable();
+	
+	stepper_set_speed(30000,30000);
+	stepper_steps(625,-625);
+	//stepper_disable();
+	sleep_msec(3000);
         //TODO
         break;
 
         case 2:
         //rotate robot 180 degrees (backwards)
-	stepper_enable();
-	stepper_set_speed(50000,50000);
-	stepper_steps(1000,-1000);
-	stepper_disable();
+	//stepper_enable();
+	printf("rotate 180 \n");
+	stepper_set_speed(30000,30000);
+	stepper_steps(1250,-1250);
+	//stepper_disable();
+	sleep_msec(3000);
         //TODO
         break;
 
-		case 3;
+		case 3:
 		//rotate robot right 45 degrees 
-		stepper_enable();
-		stepper_set_speed(50000,50000);
-		stepper_steps(-250,225);
-		stepper_disable();
+		//stepper_enable();
+		printf("rotate 45 right\n");
+		stepper_set_speed(30000,30000);
+		stepper_steps(-312.5,312.5);
+		//stepper_disable();
+		sleep_msec(2000);
 		break;
 
-		case 4; 
+		case 4:
 		//rotate robot left 45 degrees
-		stepper_enable();
-		stepper_set_speed(50000,50000);
-		stepper_steps(250,-225);
-		stepper_disable();
+		//stepper_enable();
+		printf("rotate 45 left\n");
+		stepper_set_speed(30000,30000);
+		stepper_steps(312.5,-312.5);
+		//stepper_disable();
+		sleep_msec(2000);
 		break;
     }
 }
