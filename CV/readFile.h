@@ -1,25 +1,37 @@
 // Read the color.txt file and return the integer value stored in the file as an integer
+// This file is written in C 
 
-#ifndef READFILE_H
-#define READFILE_H
-
-#include <iostream>
-#include <fstream>
-#include <string>
+#include <string.h>
+#include <stdio.h>
 
 int readIntegerFromFile() {
-    std::ifstream file("state.txt");
+    FILE *file = fopen("color.txt", "r");
     if (!file) {
-        std::cerr << "Error opening file\n";
+        printf("Error opening file\n");
         return -1;
     }
 
     int number;
-    file >> number;
+    fscanf(file, "%d", &number);
 
-    file.close();
+    fclose(file);
 
     return number;
 }
 
-#endif // READFILE_H
+// int readIntegerFromFile() {
+//     std::ifstream file("state.txt");
+//     if (!file) {
+//         std::cerr << "Error opening file\n";
+//         return -1;
+//     }
+
+//     int number;
+//     file >> number;
+
+//     file.close();
+
+//     return number;
+// }
+
+// #endif // READFILE_H
