@@ -1,0 +1,11 @@
+Run start.sh to start the made script and start the python CV in the background
+Run make_start.sh to make the script, run it, and start the python CV in the background
+
+readfile.h's readIntegerFromFile() can be called to get the value of the color. The integer values are as following:
+
+0: Black
+1: Blue
+2: Green
+3: Red
+4: White
+5: Error

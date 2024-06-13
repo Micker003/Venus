@@ -189,6 +189,22 @@ void rotateRobot(int direction) {
 	stepper_disable();
         //TODO
         break;
+
+		case 3;
+		//rotate robot right 45 degrees 
+		stepper_enable();
+		stepper_set_speed(50000,50000);
+		stepper_steps(-250,225);
+		stepper_disable();
+		break;
+
+		case 4; 
+		//rotate robot left 45 degrees
+		stepper_enable();
+		stepper_set_speed(50000,50000);
+		stepper_steps(250,-225);
+		stepper_disable();
+		break;
     }
 }
 

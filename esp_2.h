@@ -3,12 +3,12 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-//create a struct called coordinates which can maintain the location of the robot
-struct coordinates {
-    int x; 
-    int y;
-    char* objectAtLocation;
-};
+// //create a struct called coordinates which can maintain the location of the robot
+// struct coordinates {
+//     int x; 
+//     int y;
+//     char* objectAtLocation;
+// };
 
 void send_message(char* message){
     if(strlen(message) > 256){
@@ -35,13 +35,13 @@ void send_message(char* message){
     }
 }
 
-void decodeMessage(const char *message, int *ID, struct coordinates* coordinates){
+void decodeMessage(const char *message, int *ID, int *x, int *y){
     // Use sscanf to parse the integers from the message string
-    coordinates->objectAtLocation = "Empty";
-    sscanf(message, "%d,%d,%d", ID, &(coordinates->x), &(coordinates->y));
+    // coordinates->objectAtLocation = "Empty";
+    sscanf(message, "%d,%d,%d", ID, x, y);
 }
 
-char* receive_message(int *ID, struct coordinates* coordinates){
+char* receive_message(int *ID, int *x, int *y){
     uint8_t read_len[4];
     for(uint32_t i = 0; i < 4; i++)
     {
@@ -60,18 +60,18 @@ char* receive_message(int *ID, struct coordinates* coordinates){
     buffer[length] = '\0'; // Null terminate the string
     printf("  >%s\n", buffer);
     fflush(NULL);
-    decodeMessage(buffer, ID, coordinates);
+    decodeMessage(buffer, ID, x, y);
     return buffer;
 }
 
-char* glue(int ID, struct coordinates coordinates) {
+char* glue(int ID, int x, int y) {
     char ID_C[12] = ""; // Increase the size to handle more than single-digit IDs
     char x_c[12] = "";
     char y_c[12] = "";
     
     sprintf(ID_C, "%d", ID);
-    sprintf(x_c, "%d", coordinates.x);
-    sprintf(y_c, "%d", coordinates.y);
+    sprintf(x_c, "%d", x);
+    sprintf(y_c, "%d", y);
     
     // Calculate the total length of the resulting string
     size_t total_length = strlen(ID_C) + strlen(x_c) + strlen(y_c) + 2 + 1; // 2 commas and 1 null terminator
@@ -93,67 +93,74 @@ char* glue(int ID, struct coordinates coordinates) {
     return result;
 }
 
-void send_information(int ID, struct coordinates coordinates){
-    char* output = glue(ID, coordinates);
+void send_information(int ID, int x, int y){
+    char* output = glue(ID, x, y);
     printf("Message: %s\n", output);
     send_message(output);
     free(output); // Free allocated memory
 }
 
-void receive_information(int *ID, struct coordinates* coordinates) {
-    char *message = receive_message(ID, coordinates);
+void receive_information(int *ID, int *x, int *y) {
+    char *message = receive_message(ID, x, y);
     if (message != NULL) {
-        printf("Received message: %d, %d, %d\n", *ID, coordinates->x, coordinates->y);
+        printf("Received message: %d, %d, %d\n", *ID, *x, *y);
         free(message); // Free allocated memory
     }
 }
 
-int main() {
-    printf("Boom\n");
-    switchbox_init();
-    switchbox_set_pin(IO_AR0, SWB_UART0_RX);
-    switchbox_set_pin(IO_AR1, SWB_UART0_TX);
+// int main() {
+//     printf("Boom\n");
+//     switchbox_init();
+//     switchbox_set_pin(IO_AR0, SWB_UART0_RX);
+//     switchbox_set_pin(IO_AR1, SWB_UART0_TX);
 
-    // Initialize UART 0
-    uart_init(UART0);
-    // Flush FIFOs of UART 0
-    uart_reset_fifos(UART0);
+//     // Initialize UART 0
+//     uart_init(UART0);
+//     // Flush FIFOs of UART 0
+//     uart_reset_fifos(UART0);
 
-    fcntl(0, F_SETFL, fcntl(0, F_GETFL) | O_NONBLOCK);
+//     fcntl(0, F_SETFL, fcntl(0, F_GETFL) | O_NONBLOCK);
 
-    struct coordinates currentCoordinate;
-    struct coordinates receivedCoordinates;
+//     // struct coordinates currentCoordinate;
+//     // struct coordinates receivedCoordinates;
+//     int currentX;
+//     int currentY;
+//     int currentID;
 
-    // Create the initial coordinate which can be assumed as empty
-    currentCoordinate.x = 123;
-    currentCoordinate.y = 684;
-    currentCoordinate.objectAtLocation = "Empty";
-    int ID = 0;
+//     int receivedX;
+//     int receivedY;
+//     // int receivedID;
 
-    bool readyToSendInfo = true;
+//     // Create the initial coordinate which can be assumed as empty
+//     currentX = 123;
+//     currentY = 684;
+//     currentID = 0;
+//     int ID = 0;
 
-    while(true){
-        char ch;
-        if (read(STDIN_FILENO, &ch, 1) == 1) {
-            readyToSendInfo = true;
-        }
+//     bool readyToSendInfo = true;
 
-        if(uart_has_data(UART0)){
-            receive_information(&ID, &receivedCoordinates);
-            printf("Received message: %d, %d, %d\n", ID, receivedCoordinates.x, receivedCoordinates.y);
-        }
-        else if (readyToSendInfo){
-            send_information(ID, currentCoordinate);
-            readyToSendInfo = false;
-        }
-    }
+//     while(true){
+//         char ch;
+//         if (read(STDIN_FILENO, &ch, 1) == 1) {
+//             readyToSendInfo = true;
+//         }
 
-    printf("Done\n");
+//         if(uart_has_data(UART0)){
+//             receive_information(&ID, &receivedX, &receivedY);
+//             printf("Received message: %d, %d, %d\n", ID, x, y);
+//         }
+//         else if (readyToSendInfo){
+//             send_information(ID, currentCoordinate);
+//             readyToSendInfo = false;
+//         }
+//     }
 
-    fflush(NULL);
-    uart_reset_fifos(UART0);
-    uart_destroy(UART0);
-    // Clean up after use
-    pynq_destroy();
-    return EXIT_SUCCESS;
-}
+//     printf("Done\n");
+
+//     fflush(NULL);
+//     uart_reset_fifos(UART0);
+//     uart_destroy(UART0);
+//     // Clean up after use
+//     pynq_destroy();
+//     return EXIT_SUCCESS;
+// }
