@@ -8,12 +8,14 @@
     #include "esp_2.h"
     #include <libpynq.h>
     #include <stepper.h>
+    #include <readFile.h>
 
 
     #define initialx 0
     #define initialy 0
     #define MAX_SIZE 100
 
+    #define CAMERA 1 // 1 if using camera, 0 if not using camera
 
     // function to create a queue of given capacity.
     // It initializes size of queue as 0
@@ -327,18 +329,20 @@
     * @param color Struct containing RGB values
     * @return Color integer based on the specified scheme
     */
+
+    // Not appliccable when using the camera
     int convertToColor(struct color color) {
         // Check for the presence of a dominant color
         if (color.red > 150 && color.red > color.green && color.red > color.blue) {
-            return 1; //1 represents red
+            return 3; //1 represents red
         } else if (color.green > 150 && color.green > color.red && color.green > color.blue) {
             return 2; //2 represents green
         } else if (color.blue > 150 && color.blue > color.red && color.blue > color.green) {
-            return 3; //3 represents blue
+            return 1; //3 represents blue
         } else if (color.red > 200 && color.green > 200 && color.blue > 200) {
             return 4; //4 represents white
         } else {
-            return 5; // 5 represents black
+            return 0; // 5 represents black
         }
     }
 
@@ -406,18 +410,21 @@
         // 3: Red
         // 4: White
 
+
+        if (CAMERA == 0){
+            struct color colorstr = colorSensor();
+            int color = convertToColor(colorstr);
+        }
+        else(){
+            int color = readIntegerFromFile();
+        }
+        int color = readIntegerFromFile()
+
         if (blockHeight < 20) {              //checking for big block
-            // struct color colorstr = colorSensor();
-            // int color = convertToColor(colorstr);
-            int color = readIntegerFromFile()
-        
-            s.blockType = 50 + color;
+            s.blockType = 1 + color;
             i = 10;
         } if (blockHeight < 30 && blockHeight > 20) {
-            // struct color colorstr = colorSensor();
-            // int color = convertToColor(colorstr);
-            int color = readIntegerFromFile()
-            s.blockType = 40 + color;
+            s.blockType = 6 + color;
             i = 10;
         } else {
             s.blockType = 60; //6 represents no block
@@ -489,11 +496,11 @@
         int property = 0;
         printf("returnSquarePropety boundary = %d \n", s.boundaryPresent);
         if(s.boundaryPresent == 1) {
-            property = 1; //1 represents boundary
+            property = 15; // Direction needs to be added
         } else if (s.cliffPresent == 1) {
-            property = 2; // 2 represents cliff
+            property = 20; // 
         } else if (s.holePresent == 1) {
-            property = 3; // 3 represents hole
+            property = 25; // 
         } else if (s.blockType != 60) {
             property = s.blockType;
         } 
@@ -525,6 +532,7 @@
         struct squareType st = checkSquare();
         int propertyAtCoordinate;
         propertyAtCoordinate = returnSquareProperty(st);
+        // North: 15 stays 15
         be.objectAtLocation = propertyAtCoordinate; // add the value for the object at location to the coordinate before adding to list 
         printf("property at coordinate: %d \n", propertyAtCoordinate);
         if (propertyAtCoordinate == 0) { //0 represents empty
@@ -557,6 +565,9 @@
         struct squareType st = checkSquare();
         int propertyAtCoordinate;
         propertyAtCoordinate = returnSquareProperty(st);
+        if (propertyAtCoordinate == 15) {
+            propertyAtCoordinate = 18; // East
+        }
         be.objectAtLocation = propertyAtCoordinate;
         
         if (propertyAtCoordinate == 0) {
@@ -590,6 +601,9 @@
         struct squareType st = checkSquare();
         int propertyAtCoordinate;
         propertyAtCoordinate = returnSquareProperty(st);
+        if (propertyAtCoordinate == 15) {
+            propertyAtCoordinate = 17; // West
+        }
         be.objectAtLocation = propertyAtCoordinate;
         if (propertyAtCoordinate == 0) {
             printf("left exploration condition passed \n");
@@ -622,6 +636,9 @@
         struct squareType st = checkSquare();
         int propertyAtCoordinate;
         propertyAtCoordinate = returnSquareProperty(st);
+        if (propertyAtCoordinate == 15) {
+            propertyAtCoordinate = 16; // South
+        }
         be.objectAtLocation = propertyAtCoordinate;
         
         if (propertyAtCoordinate == 0) {
