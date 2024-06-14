@@ -32,7 +32,7 @@ while (True):
     # Define lower and upper bounds for the color you want to detect
     colornames = ['black', 'blue', 'green', 'red', 'red_top', 'white']
     display_colors = [(60, 60, 60), (255, 0, 0), (0, 255, 0), (0, 0, 255), (0, 0, 255), (255, 255, 255)]
-    lower_bound = np.array([[0,0,0],[90,satbottom,vbottom],[45, 75, vbottom],[0,satbottom,vbottom],[165,satbottom,vbottom],[0,0,140]])
+    lower_bound = np.array([[0,0,0],[90,70,0],[45, 75, vbottom],[0,satbottom,vbottom],[165,satbottom,vbottom],[0,0,140]])
     upper_bound = np.array([[180,70,80],[120,256,256],[85, 256, 256], [10, 256, 256], [180, 256, 256], [180, 60, 256]])
 
     # Cut the top and bottom of the image
