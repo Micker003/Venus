@@ -29,7 +29,6 @@ int main(void) {
     // char buf[256];
     fcntl(0, F_SETFL, fcntl(0, F_GETFL) | O_NONBLOCK);
 
-    uart_init(UART0);
     send_information(0,2,2);
     send_information(2,3,3);
     send_information(3,4,4);
