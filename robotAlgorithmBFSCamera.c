@@ -418,7 +418,7 @@ struct squareType checkSquare() {
     else(){
         int color = readIntegerFromFile();
     }
-    int color = readIntegerFromFile()
+    int color = readIntegerFromFile();
 
     if (blockHeight < 60) {              //checking for big block
         s.blockType = 6 + color;
