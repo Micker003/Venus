@@ -418,7 +418,6 @@
         else(){
             int color = readIntegerFromFile();
         }
-        int color = readIntegerFromFile()
 
         if (blockHeight < 20) {              //checking for big block
             s.blockType = 1 + color;
