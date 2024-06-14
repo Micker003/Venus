@@ -1,7 +1,7 @@
 # import the opencv library
 import cv2
 import numpy as np
-HEADLESS = False
+HEADLESS = True
 
 # # get list of available cameras
 # for i in range(0, 6):
@@ -12,7 +12,7 @@ HEADLESS = False
 
 
 # define a video capture object
-vid = cv2.VideoCapture(4)
+vid = cv2.VideoCapture(0)
 # discard the first few frames to allow the camera to adjust to the lighting
 for i in range(10):
     ret, frame = vid.read()
@@ -87,6 +87,7 @@ while (True):
     else:
         state_file.write("5")
     state_file.close()
+
     # # Filter contours based on area or other criteria
     # min_area = 300
     # filtered_contours = [cnt for cnt in contours if cv2.contourArea(cnt) > min_area]
@@ -125,14 +126,10 @@ while (True):
     # Display the resulting frame
     if not HEADLESS:
         cv2.imshow('frame', frame)
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
 
-    # the 'q' button is set as the
-    # quitting button you may use any
-    # desired button of your choice
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
-
-# After the loop release the cap object
+# After the loop release the camera
 vid.release()
 log_file.close()
 # Destroy all the windows
