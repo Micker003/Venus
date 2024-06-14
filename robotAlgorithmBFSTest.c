@@ -398,13 +398,13 @@
 
         int blockHeight = downwardDistanceData();
         //height of smallest block assumed to be 3 cm and height of sensor above ground assumed as 6 cm
-        if (blockHeight < 20) {              //checking for big block
+        if (blockHeight < 70) {              //checking for big block
             struct color colorstr = colorSensor();
             int color = convertToColor(colorstr);
         
             s.blockType = 50 + color;
             i = 10;
-        } if (blockHeight < 30 && blockHeight > 20) {
+        } if (blockHeight < 90 && blockHeight > 70) {
             struct color colorstr = colorSensor();
             int color = convertToColor(colorstr);
             s.blockType = 40 + color;
