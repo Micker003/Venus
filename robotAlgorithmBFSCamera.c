@@ -19,16 +19,6 @@
 
 // function to create a queue of given capacity.
 // It initializes size of queue as 0
-int color() {
-    if (CAMERA == 0){
-        struct color colorstr = colorSensor();
-        int color = convertToColor(colorstr);
-    }
-    else(){
-        int color = readIntegerFromFile();
-    }
-}
-
 struct Queue* createQueue(unsigned capacity)
 {
     struct Queue* queue = (struct Queue*)malloc(sizeof(struct Queue));
@@ -421,13 +411,20 @@ struct squareType checkSquare() {
     // 4: White
 
 
+    if (CAMERA == 0){
+        struct color colorstr = colorSensor();
+        int color = convertToColor(colorstr);
+    }
+    else(){
+        int color = readIntegerFromFile();
+    }
+    int color = readIntegerFromFile()
 
-
-    if (blockHeight < 20) {              //checking for big block
-        s.blockType = 1 + color();
+    if (blockHeight < 60) {              //checking for big block
+        s.blockType = 6 + color;
         i = 10;
-    } if (blockHeight < 30 && blockHeight > 20) {
-        s.blockType = 6 + color();
+    } if (blockHeight < 90 && blockHeight > 60) {
+        s.blockType = 1 + color;
         i = 10;
     } else {
         s.blockType = 60; //6 represents no block
