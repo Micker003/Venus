@@ -31,6 +31,7 @@ void send_message(char* message){
         for(uint32_t i = 0; i < length; i++){
             uart_send(UART0, message[i]);
         }
+        uart_send(UART0, '\0'); // Null terminator
         printf("Message is sent\n");
     }
 }
