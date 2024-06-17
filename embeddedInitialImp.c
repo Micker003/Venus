@@ -147,10 +147,10 @@ struct color colorSensor() {
 struct IRSensors measureIRData() {
 	/*
     struct IRSensors IRData;
-    IRData.sensor1Val = IR_read(ADC5);
+    IRData.sensor1Val = IR_read(ADC1)-20;
     IRData.sensor2Val = IR_read(ADC4);
-    IRData.sensor3Val = IR_read(ADC3);
-    IRData.sensor4Val = IR_read(ADC2);x
+    IRData.sensor3Val = IR_read(ADC3)-67;
+    IRData.sensor4Val = IR_read(ADC2)-40;
     return IRData;
 	*/
 	 //all four sensors having a value of above 280 should be interpreted by the algorithm as no hold or boundary being present 
