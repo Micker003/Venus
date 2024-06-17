@@ -145,7 +145,7 @@ struct color colorSensor() {
  * measure the values for all three IR sensors
 */
 struct IRSensors measureIRData() {
-	/*
+	/* CURRENT THRESHOLD: 300
     struct IRSensors IRData;
     IRData.sensor1Val = IR_read(ADC1)-20;
     IRData.sensor2Val = IR_read(ADC4);
