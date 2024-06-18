@@ -30,9 +30,28 @@ int main(void) {
     fcntl(0, F_SETFL, fcntl(0, F_GETFL) | O_NONBLOCK);
 
     send_information(0,2,2);
+    send_information(1,1,1);
     send_information(2,3,3);
     send_information(3,4,4);
-    send_information(4,-5,5);
-    send_information(20,-4,2);
+    send_information(4,4,2);
+    send_information(5,4,0);
+    send_information(6,4,-2);
+    send_information(7,4,-4);
+    send_information(8,2,-4);
+    send_information(9,0,-4);
+    send_information(10,-2,-4);
+
+    send_information(15,15,0);
+    send_information(16,-15,0);
+    send_information(17,0,15);
+    send_information(18,0,-15);
+
+    send_information(20,10,2);
+    send_information(20,10,6);
+    send_information(20,10,10);  
+
+    send_information(25,-10,2);
+    send_information(25,-10,6);
+    send_information(25,-10,10);
     return 0;
 }
