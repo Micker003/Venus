@@ -18,7 +18,11 @@ void send_message(char* message){
         printf("Message contains no information\n");
     }
     else{
-        uint32_t length = strlen(message);
+        uint32_t length = strlen(message) + 1;
+        // Calculate how much bits need to be added to make the length divisible by 8
+        uint32_t padding = 8 - (length % 8);
+        uint32_t padded_length = length + padding;
+
         uint8_t* len_bytes = (uint8_t*)&length;
 
         fflush(NULL);
@@ -31,6 +35,10 @@ void send_message(char* message){
         for(uint32_t i = 0; i < length; i++){
             uart_send(UART0, message[i]);
         }
+        for (uint32_t i = 0; i < padding; i++){
+            uart_send(UART0, ' ');
+        }
+
         uart_send(UART0, '\0'); // Null terminator
         printf("Message is sent\n");
     }

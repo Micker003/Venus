@@ -52,6 +52,9 @@ int main(void) {
 
     send_information(25,-10,2);
     send_information(25,-10,6);
-    send_information(25,-10,10);
+    send_information(25,-10,60);
+    send_information(25,-10,-60);
+    send_information(25,-10,-100);
+    send_information(25,-100,-100);
     return 0;
 }
