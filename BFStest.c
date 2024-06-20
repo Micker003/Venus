@@ -230,7 +230,7 @@
     * method that creates a path for the robot to navigate to the 
     * coordinate that is selected from the queue
     */
-    void robotNavigation(struct coordinates current, struct coordinates destination) {
+    int robotNavigation(struct coordinates current, struct coordinates destination) {
         //currentidea: BFS algorithm ensures that the coordinates below are always explored
         //forming a pyramid of sorts, so it is always possible to navigate down and to the right or left.
         int yDistanceToCover = destination.y - current.y;
@@ -282,6 +282,18 @@
         if (xDistanceToCover > 0) {
             printf("Covering x distance right \n");
             while (current.x != destination.x) {
+                if (abs(current.x - destination.x) == 1) {
+                    printf("verifying cliff not present");
+                    int cliffDistance;
+                    cliffDistance = forwardDistanceData();
+                    int obstacle;
+                    
+                    if (cliffDistance < 100) {
+                        obstacle = 2;
+                        return obstacle;
+                    } 
+                    
+                }
                 struct coordinates rightCoor = current; 
                 rightCoor.x = current.x + 1;
                 int rightCheck = findObjectAtCoordinate(&list, rightCoor);
@@ -299,6 +311,18 @@
         } else if (xDistanceToCover < 0) {
             printf("Covering x distance left \n");
             while (current.x != destination.x) {
+                if (abs(current.x - destination.x) == 1) {
+                    printf("verifying cliff not present");
+                    int cliffDistance;
+                    cliffDistance = forwardDistanceData();
+                    int obstacle;
+                    
+                    if (cliffDistance < 100) {
+                        obstacle = 2;
+                        return obstacle;
+                    } 
+                    
+                }
                 struct coordinates leftCoor = current; 
                 leftCoor.x = current.x - 1;
                 int leftCheck = findObjectAtCoordinate(&list, leftCoor);
@@ -315,10 +339,7 @@
             }
         }
 
-    
-        //TODO:make sure that the robot moves to the right or left to reach the target x coordinate without hitting an object. 
-        //TODO: refactor the code in order to reduce complexity of robotNavigation method. 
-        
+        return 9999;        
     }
 
 
@@ -732,7 +753,17 @@
             }
             */
             printf("coordinates (%d, %d, %d) dequeued from queue for Navigation\n", navigateTo.x, navigateTo.y, navigateTo.objectAtLocation);
-            robotNavigation(beingExplored, navigateTo);
+            int navCheck = robotNavigation(beingExplored, navigateTo);
+            int xdiff = navigateTo.x - beingExplored.x;
+            if (navCheck == 2) {
+                navigateTo.objectAtLocation = navCheck;
+                send_information(navigateTo.objectAtLocation, navigateTo.x, navigateTo.y);
+                struct coordinates current = navigateTo;
+                current.x = current.x + xdiff;
+                addElement(&list, navigateTo);
+                navigateTo = dequeue(queue); 
+                robotNavigation(current, navigateTo);
+            }
             //make robotNavigation return coordinate, if forward is empty return integer using squaretype method, then add it to the arraylist below.
             beingExplored = navigateTo; //once the robotNavigation() method has been executed set the robot's beingExplored coordinate to the navigateTo coordinate. 
         

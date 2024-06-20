@@ -109,14 +109,21 @@ struct coordinates moveRobot(struct coordinates inputCoordinate, int dirSelVal) 
             c.y = inputCoordinate.y;
             c.objectAtLocation = inputCoordinate.objectAtLocation;
             rotateRobot(0);
+
             moveRobotForwardOrBackward(1);
+   
+            rotateRobot(1);
             break;
         case 2: //move the robot one step to the left
             c.x = inputCoordinate.x - 1;
             c.y = inputCoordinate.y;
             c.objectAtLocation = inputCoordinate.objectAtLocation;
             rotateRobot(1);
+
             moveRobotForwardOrBackward(1);
+
+            rotateRobot(0);
+
             break;
         
         case 3: //move the robot one step backwards
@@ -124,6 +131,9 @@ struct coordinates moveRobot(struct coordinates inputCoordinate, int dirSelVal) 
             c.y = inputCoordinate.y - 1;
             c.objectAtLocation = inputCoordinate.objectAtLocation;
             moveRobotForwardOrBackward(0);
+
+            rotateRobot(2);
+
             break;
     
     }
@@ -274,6 +284,7 @@ void robotNavigation(struct coordinates current, struct coordinates destination)
                 break;
             case 1:
                 current = moveRobot(current, 3); //if the coordinate is empty move the robot down
+                
                 break;
             default:
                 break;
@@ -295,6 +306,7 @@ void robotNavigation(struct coordinates current, struct coordinates destination)
                 break;
             case 1:
                 current = moveRobot(current, 1);
+                
                 break;
             }
         }
@@ -312,6 +324,7 @@ void robotNavigation(struct coordinates current, struct coordinates destination)
                 break;
             case 1:
                 current = moveRobot(current, 2);
+            
                 break;
             }
         }
@@ -354,7 +367,7 @@ struct squareType checkSquare(void);
 * method to mesure the paramenters of the square infront of square currently occupied by robot 
 */
 struct squareType checkSquare() {
-    sleep_msec(1000);
+
     printf("square check started\n");
     struct squareType s; 
     struct IRSensors IR;
@@ -375,7 +388,7 @@ struct squareType checkSquare() {
     //distance of each move is assumed to be 5 cm 
     if (cliffDistance < 50) {
         s.cliffPresent = 1;
-        i = 10;
+        break;
     } else {
         s.cliffPresent = 0;
     }
@@ -387,11 +400,11 @@ struct squareType checkSquare() {
     if (IR.sensor1Val < IRthreshold && IR.sensor2Val < IRthreshold && IR.sensor3Val < IRthreshold && IR.sensor4Val < IRthreshold) {
         s.boundaryPresent = 0; //if all four sensors indicate the surface is black we return true for boundary present
         s.holePresent = 1;
-        i = 10;
+        break;
     } else if (IR.sensor1Val < IRthreshold || IR.sensor2Val < IRthreshold || IR.sensor3Val < IRthreshold || IR.sensor4Val < IRthreshold) {
         s.boundaryPresent = 1; 
         s.holePresent = 0;
-        i = 10;
+        break;
     } else {
         s.boundaryPresent = 0;
         s.holePresent = 0;
@@ -422,16 +435,16 @@ struct squareType checkSquare() {
 
     if (blockHeight < 60) {              //checking for big block
         s.blockType = 6 + color;
-        i = 10;
+        break;
     } if (blockHeight < 90 && blockHeight > 60) {
         s.blockType = 1 + color;
-        i = 10;
+        break;
     } else {
         s.blockType = 60; //6 represents no block
     }
 
 
-    sleep_msec(1000);
+
 
     if (i == 1) {
         rotateRobot(4);
@@ -494,7 +507,7 @@ void addElement(ArrayList *list, struct coordinates element) {
 int returnSquareProperty(struct squareType s) {
     //TODO convert integer and character value inside of struct s to one of five possible char values and return said value. 
     int property = 0;
-    printf("returnSquarePropety boundary = %d \n", s.boundaryPresent);
+    
     if(s.boundaryPresent == 1) {
         property = 15; // Direction needs to be added
     } else if (s.cliffPresent == 1) {
