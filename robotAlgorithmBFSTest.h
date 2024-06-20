@@ -65,7 +65,7 @@ int findObjectAtCoordinate(ArrayList *list, struct coordinates target);
 void avoidCollisions(int axisOfMovement, struct coordinates current, struct coordinates target, int xDistanceToCover, int yDistanceToCover);
 void robotNavigation(struct coordinates current, struct coordinates destination);
 int convertToColor(struct color color);
-int checkSquare();
+struct squareType checkSquare(void);
     
 int returnSquareProperty(struct squareType s);
 void exploreForward(struct coordinates cc, struct Queue* queue);
