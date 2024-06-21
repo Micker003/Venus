@@ -395,7 +395,6 @@
 "Assets/M2MqttUnity/Assets/M2MqttUnity/Scripts/BrokerSettings.cs"
 "Assets/M2MqttUnity/Assets/M2MqttUnity/Scripts/M2MqttUnityClient.cs"
 "Assets/MainScript.cs"
-"Assets/Other/MagneticsScript.cs"
 "Assets/VarStorage.cs"
 -langversion:9.0
 

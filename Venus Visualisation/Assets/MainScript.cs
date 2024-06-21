@@ -30,7 +30,7 @@ namespace M2MqttUnity.Examples
         public int botID;
         
         [Header("MQTT config")]
-        float factorUnitConvert = 1f;
+        float factorUnitConvert = 0.5f;
         public int MQTTPreset;
 
         [Header("Text file (.txt) containing debug messages")]

@@ -59,7 +59,6 @@
     <Compile Include="Assets\M2MqttUnity\Assets\M2Mqtt\Messages\MqttMsgConnectEventArgs.cs" />
     <Compile Include="Assets\M2MqttUnity\Assets\M2Mqtt\Messages\MqttMsgPubrec.cs" />
     <Compile Include="Assets\M2MqttUnity\Assets\M2Mqtt\Messages\MqttMsgSubscribeEventArgs.cs" />
-    <Compile Include="Assets\Other\MagneticsScript.cs" />
     <Compile Include="Assets\M2MqttUnity\Assets\M2Mqtt\Messages\MqttMsgUnsuback.cs" />
     <Compile Include="Assets\M2MqttUnity\Assets\M2Mqtt\Internal\InternalEvent.cs" />
     <Compile Include="Assets\M2MqttUnity\Assets\M2Mqtt\Messages\MqttMsgSubscribedEventArgs.cs" />
