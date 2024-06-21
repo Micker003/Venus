@@ -21,9 +21,13 @@ void send_message(char* message){
         uint32_t length = strlen(message) + 1;
         // Calculate how much bits need to be added to make the length divisible by 8
         uint32_t padding = 8 - (length % 8);
-        uint32_t padded_length = length + padding;
-
-        uint8_t* len_bytes = (uint8_t*)&length;
+        uint32_t padded_length = length;
+        if(padding < 8){
+                padded_length = length + padding;
+        }
+        uint8_t* len_bytes = (uint8_t*)&padded_length;
+        // Print the length of the message
+        printf("Lengths : %d, %d\n", length, padded_length);
 
         fflush(NULL);
 
@@ -35,9 +39,11 @@ void send_message(char* message){
         for(uint32_t i = 0; i < length; i++){
             uart_send(UART0, message[i]);
         }
-        for (uint32_t i = 0; i < padding; i++){
-            uart_send(UART0, ' ');
-        }
+	    if (padding - 1 > 0){
+            for (uint32_t i = 0; i < padding - 1; i++){
+                uart_send(UART0, ' ');
+            }
+	    }
 
         uart_send(UART0, '\0'); // Null terminator
         printf("Message is sent\n");
@@ -107,6 +113,7 @@ void send_information(int ID, int x, int y){
     printf("Message: %s\n", output);
     send_message(output);
     free(output); // Free allocated memory
+    // sleep_msec(1000);
 }
 
 void receive_information(int *ID, int *x, int *y) {
