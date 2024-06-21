@@ -1,9 +1,14 @@
+
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <libpynq.h>
-#include "embeddedInitialImp.h"
 #include <stepper.h>
+#include "embeddedInitialImp.h"
+#include "esp_2.h"
+#include "readFile.h"
+#define LENGTH 20
 
 
 typedef struct point{
@@ -13,67 +18,674 @@ typedef struct point{
 
 }point;
 
-typedef struct{
+
+
+
+void convertToColor(int color) {
+    // Check for the presence of a dominant color
+     if(color == 0){
+                printf("Block is black\n");
+            }
+            else if (color == 1){
+                printf("Block is blue\n");
+            }
+            else if (color == 2){
+                printf("Block is green\n");
+            }
+            else if (color == 3){
+                printf("Block is red\n");
+            }
+            else if (color == 4){
+                printf("Block is white\n");
+            }
+
+}
+
+void moveRobot(void){
+            printf("Robot turned 90 degrees right\n");
+            // stepper_enable();
+            stepper_set_speed(10000,10000);
+            stepper_steps(-720,720);
+            sleep_msec(500);
+            // stepper_disable();
+
+}
+
+
+void check_surrounding(int direction,int x, int y){
+
+    // at an angle move right and then back straight and then to the left
     int height;
-    char color[LENGTH] ;
-    int x;
-    int y;
+    // stepper_enable();
+    stepper_set_speed(20000,20000);
+    stepper_steps(-100,100);
+    sleep_msec(500);
+    int color = readIntegerFromFile();
+    int forward_distance = forwardDistanceData();
+    int downward_distance = downwardDistanceData();
 
-}rock;
+    if(downward_distance<85){
+        height = 9-(downward_distance/10);
+        if(height <3.5){
+                if(direction == 0 || direction%4==0){
+                    if(color == 0){
+                        send_information(1,x+1,y+1);
+                    }
+                    else if(color == 1){
+                        send_information(2,x+1,y+1);
+                    }
+                    else if(color == 2){
+                        send_information(3,x+1,y+1);
+                    }
+                    else if(color == 3){
+                        send_information(4,x+1,y+1);
+                    }
+                    else if(color == 4){
+                        send_information(5,x+1,y+1);
+                    }
+                }
+                else if (direction == 1|| direction % 4 == 1){
+                    if(color == 0){
+                        send_information(1,x+1,y-1);
+                    }
+                    else if(color == 1){
+                        send_information(2,x+1,y-1);
+                    }
+                    else if(color == 2){
+                        send_information(3,x+1,y-1);
+                    }
+                    else if(color == 3){
+                        send_information(4,x+1,y-1);
+                    }
+                    else if(color == 4){
+                        send_information(5,x+1,y-1);
+                    }
+                }
+                else if(direction == 2|| direction % 4 == 2){
+                    if(color == 0){
+                        send_information(1,x-1,y-1);
+                    }
+                    else if(color == 1){
+                        send_information(2,x-1,y-1);
+                    }
+                    else if(color == 2){
+                        send_information(3,x-1,y-1);
+                    }
+                    else if(color == 3){
+                        send_information(4,x-1,y-1);
+                    }
+                    else if(color == 4){
+                        send_information(5,x-1,y-1);
+                    }
+                }
+                else if(direction == 3|| direction %4 == 3){
+                    if(color == 0){
+                        send_information(1,x-1,y+1);
+                    }
+                    else if(color == 1){
+                        send_information(2,x-1,y+1);
+                    }
+                    else if(color == 2){
+                        send_information(3,x-1,y+1);
+                    }
+                    else if(color == 3){
+                        send_information(4,x-1,y+1);
+                    }
+                    else if(color == 4){
+                        send_information(5,x-1,y+1);
+                    }
+                }
+        }
 
-typedef struct{;
-    int x;
-    int y;
-}Hill;
+            else{
+                if(direction == 0 || direction%4==0){
+                    if(color == 0){
+                        send_information(6,x+1,y+1);
+                    }
+                    else if(color == 1){
+                        send_information(7,x+1,y+1);
+                    }
+                    else if(color == 2){
+                        send_information(8,x+1,y+1);
+                    }
+                    else if(color == 3){
+                        send_information(9,x+1,y+1);
+                    }
+                    else if(color == 4){
+                        send_information(10,x+1,y+1);
+                    }
+                
+                }
+                else if (direction == 1|| direction % 4 == 1){
+                     if(color == 0){
+                        send_information(6,x+1,y-1);
+                    }
+                    else if(color == 1){
+                        send_information(7,x+1,y-1);
+                    }
+                    else if(color == 2){
+                        send_information(8,x+1,y-1);
+                    }
+                    else if(color == 3){
+                        send_information(9,x+1,y-1);
+                    }
+                    else if(color == 4){
+                        send_information(10,x+1,y-1);
+                    }
+                    
+                }
+                else if(direction == 2|| direction % 4 == 2){
+                     if(color == 0){
+                        send_information(6,x-1,y-1);
+                    }
+                    else if(color == 1){
+                        send_information(7,x-1,y-1);
+                    }
+                    else if(color == 2){
+                        send_information(8,x-1,y-1);
+                    }
+                    else if(color == 3){
+                        send_information(9,x-1,y-1);
+                    }
+                    else if(color == 4){
+                        send_information(10,x-1,y-1);
+                    }
+                    
+                }
+                else if(direction == 3|| direction %4 == 3){
+                     if(color == 0){
+                        send_information(6,x-1,y+1);
+                    }
+                    else if(color == 1){
+                        send_information(7,x-1,y+1);
+                    }
+                    else if(color == 2){
+                        send_information(8,x-1,y+1);
+                    }
+                    else if(color == 3){
+                        send_information(9,x-1,y+1);
+                    }
+                    else if(color == 4){
+                        send_information(10,x-1,y+1);
+                    }
+                    
+                }
+            }
+    }
 
 
-int  checkforobstacle(int x, int y,int *direction){
+    else if(forward_distance<70){
+
+        // hill found
+         if(direction == 0 || direction%4==0){
+                send_information(20,x+1,y+1);
+                }
+                else if (direction == 1|| direction % 4 == 1){
+                    send_information(20,x+1,y-1);
+                }
+                else if(direction == 2|| direction % 4 == 2){
+                    send_information(20,x-1,y-1);
+                }
+                else if(direction == 3|| direction %4 == 3){
+                    send_information(20,x-1,y+1);
+              }
+
+    }
+    stepper_set_speed(20000,20000);
+    stepper_steps(100,-100);
+    sleep_msec(500);
+     stepper_steps(100,-100);
+     sleep_msec(500);
+    color = readIntegerFromFile();
+    forward_distance = forwardDistanceData();
+    downward_distance = downwardDistanceData();
+    
+    if(downward_distance<85){
+        height = 9-(downward_distance/10);
+        if(height <3.5){
+                if(direction == 0 || direction%4==0){
+                    if(color == 0){
+                        send_information(1,x-1,y+1);
+                    }
+                    else if(color == 1){
+                        send_information(2,x-1,y+1);
+                    }
+                    else if(color == 2){
+                        send_information(3,x-1,y+1);
+                    }
+                    else if(color == 3){
+                        send_information(4,x-1,y+1);
+                    }
+                    else if(color == 4){
+                        send_information(5,x-1,y+1);
+                    }
+                }
+                else if (direction == 1|| direction % 4 == 1){
+                    if(color == 0){
+                        send_information(1,x+1,y+1);
+                    }
+                    else if(color == 1){
+                        send_information(2,x+1,y+1);
+                    }
+                    else if(color == 2){
+                        send_information(3,x+1,y+1);
+                    }
+                    else if(color == 3){
+                        send_information(4,x+1,y+1);
+                    }
+                    else if(color == 4){
+                        send_information(5,x+1,y+1);
+                    }
+                }
+                else if(direction == 2|| direction % 4 == 2){
+                    if(color == 0){
+                        send_information(1,x+1,y-1);
+                    }
+                    else if(color == 1){
+                        send_information(2,x+1,y-1);
+                    }
+                    else if(color == 2){
+                        send_information(3,x+1,y-1);
+                    }
+                    else if(color == 3){
+                        send_information(4,x+1,y-1);
+                    }
+                    else if(color == 4){
+                        send_information(5,x+1,y-1);
+                    }
+                }
+                else if(direction == 3|| direction %4 == 3){
+                    if(color == 0){
+                        send_information(1,x-1,y-1);
+                    }
+                    else if(color == 1){
+                        send_information(2,x-1,y-1);
+                    }
+                    else if(color == 2){
+                        send_information(3,x-1,y-1);
+                    }
+                    else if(color == 3){
+                        send_information(4,x-1,y-1);
+                    }
+                    else if(color == 4){
+                        send_information(5,x-1,y-1);
+                    }
+                }
+
+            }
+        else{
+                if(direction == 0 || direction%4==0){
+                    if(color == 0){
+                        send_information(6,x-1,y+1);
+                    }
+                    else if(color == 1){
+                        send_information(7,x-1,y+1);
+                    }
+                    else if(color == 2){
+                        send_information(8,x-1,y+1);
+                    }
+                    else if(color == 3){
+                        send_information(9,x-1,y+1);
+                    }
+                    else if(color == 4){
+                        send_information(10,x-1,y+1);
+                    }
+                
+                }
+                else if (direction == 1|| direction % 4 == 1){
+                     if(color == 0){
+                        send_information(6,x+1,y+1);
+                    }
+                    else if(color == 1){
+                        send_information(7,x+1,y+1);
+                    }
+                    else if(color == 2){
+                        send_information(8,x+1,y+1);
+                    }
+                    else if(color == 3){
+                        send_information(9,x+1,y+1);
+                    }
+                    else if(color == 4){
+                        send_information(10,x+1,y+1);
+                    }
+                    
+                }
+                else if(direction == 2|| direction % 4 == 2){
+                     if(color == 0){
+                        send_information(6,x+1,y-1);
+                    }
+                    else if(color == 1){
+                        send_information(7,x+1,y-1);
+                    }
+                    else if(color == 2){
+                        send_information(8,x+1,y-1);
+                    }
+                    else if(color == 3){
+                        send_information(9,x+1,y-1);
+                    }
+                    else if(color == 4){
+                        send_information(10,x+1,y-1);
+                    }
+                    
+                }
+                else if(direction == 3|| direction %4 == 3){
+                     if(color == 0){
+                        send_information(6,x-1,y-1);
+                    }
+                    else if(color == 1){
+                        send_information(7,x-1,y-1);
+                    }
+                    else if(color == 2){
+                        send_information(8,x-1,y-1);
+                    }
+                    else if(color == 3){
+                        send_information(9,x-1,y-1);
+                    }
+                    else if(color == 4){
+                        send_information(10,x-1,y-1);
+                    }
+                    
+                }
+            }
+    }
+    
+
+    else if(forward_distance<70){
+
+        // hill found
+         if(direction == 0 || direction%4==0){
+                send_information(20,x-1,y+1);
+                }
+                else if (direction == 1|| direction % 4 == 1){
+                    send_information(20,x+1,y+1);
+                }
+                else if(direction == 2|| direction % 4 == 2){
+                    send_information(20,x+1,y-1);
+                }
+                else if(direction == 3|| direction %4 == 3){
+                    send_information(20,x-1,y-1);
+              }
+
+    }
+
+    stepper_steps(-100,100);
+    sleep_msec(500);
+    // stepper_disable();
+}
+  
+
+int check_craterorhole(void){
+    int check = 0;
+
+    int threshold = 320;
+     struct IRSensors IRData = measureIRData();
+
+ if (IRData.sensor1Val<threshold && IRData.sensor2Val<threshold && IRData.sensor3Val<threshold && IRData.sensor4Val<threshold){
+    check = 1;
+ }
+
+//    stepper_enable();  +
+    stepper_set_speed(10000,10000);
+    stepper_steps(100,-100);
+    sleep_msec(500);
+
+
+if (IRData.sensor1Val<threshold && IRData.sensor2Val<threshold && IRData.sensor3Val<threshold && IRData.sensor4Val<threshold){
+    check = 1;
+ }
+
+ stepper_steps(-100,100);
+ sleep_msec(500);
+ stepper_steps(-100,100);
+ IRData = measureIRData();
+
+if (IRData.sensor1Val<threshold && IRData.sensor2Val<threshold && IRData.sensor3Val<threshold && IRData.sensor4Val<threshold){
+    check = 1;
+ }
+
+sleep_msec(500);
+stepper_steps(100,-100);
+sleep_msec(500);
+// stepper_disable();
+
+return check;
+
+
+}
+
+
+int  checkforobstacle(int *direction, int x, int y){
     // check if there's any obstacle ahead
     // using the distance sensors, check for the height of the obstacle
     // if less than 30 cm find the color of the bot using the color sensor
 
-    int height;
-    char color;
+    check_surrounding(*direction,x,y);
     int  forward_distance;
     int downward_distance;
-    int threshold = 268;
+    int height;
+    int threshold = 320;
     struct IRSensors IRData = measureIRData();
-
+    int color = readIntegerFromFile();
     forward_distance = forwardDistanceData();
     downward_distance = downwardDistanceData();
+        printf("IRData1 is %d\n",IRData.sensor1Val);
+        printf("IRData2 is %d\n",IRData.sensor2Val);
+        printf("IRData3 is %d\n",IRData.sensor3Val);
+        printf("IRData4 is %d\n",IRData.sensor4Val);
 
-    if((forward_distance<70)||IRData.sensor1Val<threshold||downward_distance<10000){
+
+    if((forward_distance<70)||IRData.sensor1Val<threshold||downward_distance<85||IRData.sensor2Val<threshold||IRData.sensor3Val<threshold||IRData.sensor4Val<threshold){
         //check for the crater
+        // to differentiate between the crater and the boundary we can say that if the 
+        // all the sensors are less than the threshold then assume that the robot is right under the crater
+        // else its just the boundary 
         
-        if (IRData.sensor1Val<268||IRData.sensor2Val<268||IRData.sensor3Val<268||IRData.sensor4Val<268){
+        if (IRData.sensor1Val<threshold||IRData.sensor2Val<threshold||IRData.sensor3Val<threshold||IRData.sensor4Val<threshold){
             // send data
             // send the coordinates
-            printf("Robot turned 90 degrees right\n");
-            stepper_enable();
-            stepper_set_speed(65535,65535);
-            stepper_steps(-500,450);
-            stepper_disable();
-            sleep_msec(1000);
+            // stepper_enable();
+            stepper_set_speed(30000,30000);
+            stepper_steps(-100,-100);
+            sleep_msec(500);
+            // stepper_disable();
+
+            int check = check_craterorhole();
+
+            if(check == 1){
+                    // crater detected
+                    
+                if(*direction == 0 || *direction%4==0){
+                send_information(25,x,y+1);
+                }
+                else if (*direction == 1|| *direction % 4 == 1){
+                    send_information(25,x+1,y);
+                }
+                else if(*direction == 2|| *direction % 4 == 2){
+                    send_information(25,x,y-1);
+                }
+                else if(*direction == 3|| *direction %4 == 3){
+                    send_information(25,x-1,y);
+                }
+            }
+
+            else{
+                if(*direction == 0 || *direction%4==0){
+                send_information(15,x,y+1);
+                }
+                else if (*direction == 1|| *direction % 4 == 1){
+                    send_information(18,x+1,y);
+                }
+                else if(*direction == 2|| *direction % 4 == 2){
+                    send_information(16,x,y-1);
+                }
+                else if(*direction == 3|| *direction %4 == 3){
+                    send_information(17,x-1,y);
+                }
+            }
+            
+            moveRobot();
+            
             *direction = *direction + 1;
             return 0;
         }
 
         // height from the sensor to the ground =  10 cm
         // therefore the height of the block 10-downward_distance
-        height = 10-(downward_distance/10);
+        height = 9-(downward_distance/10);
 
-        if (height != 0){
-            color = colorSensor();
-            stepper_enable();
+        if (downward_distance < 85){
             printf("Rock sample detected\n");
-            printf("color is %c\n",color);
-            printf("Robot turned 90 degrees right\n");
-            stepper_set_speed(65535,65535);
-            stepper_steps(-500,450);
-            stepper_disable();
-            sleep_msec(1000);
+            if(height <3.5){
+                if(*direction == 0 || *direction%4==0){
+                    if(color == 0){
+                        send_information(1,x,y+1);
+                    }
+                    else if(color == 1){
+                        send_information(2,x,y+1);
+                    }
+                    else if(color == 2){
+                        send_information(3,x,y+1);
+                    }
+                    else if(color == 3){
+                        send_information(4,x,y+1);
+                    }
+                    else if(color == 4){
+                        send_information(5,x,y+1);
+                    }
+                }
+                else if (*direction == 1|| *direction % 4 == 1){
+                    if(color == 0){
+                        send_information(1,x+1,y);
+                    }
+                    else if(color == 1){
+                        send_information(2,x+1,y);
+                    }
+                    else if(color == 2){
+                        send_information(3,x+1,y);
+                    }
+                    else if(color == 3){
+                        send_information(4,x+1,y);
+                    }
+                    else if(color == 4){
+                        send_information(5,x+1,y);
+                    }
+                }
+                else if(*direction == 2|| *direction % 4 == 2){
+                    if(color == 0){
+                        send_information(1,x,y-1);
+                    }
+                    else if(color == 1){
+                        send_information(2,x,y-1);
+                    }
+                    else if(color == 2){
+                        send_information(3,x,y-1);
+                    }
+                    else if(color == 3){
+                        send_information(4,x,y-1);
+                    }
+                    else if(color == 4){
+                        send_information(5,x,y-1);
+                    }
+                }
+                else if(*direction == 3|| *direction %4 == 3){
+                    if(color == 0){
+                        send_information(1,x-1,y);
+                    }
+                    else if(color == 1){
+                        send_information(2,x-1,y);
+                    }
+                    else if(color == 2){
+                        send_information(3,x-1,y);
+                    }
+                    else if(color == 3){
+                        send_information(4,x-1,y);
+                    }
+                    else if(color == 4){
+                        send_information(5,x-1,y);
+                    }
+                }
+
+            }
+            else{
+                if(*direction == 0 || *direction%4==0){
+                    if(color == 0){
+                        send_information(6,x,y+1);
+                    }
+                    else if(color == 1){
+                        send_information(7,x,y+1);
+                    }
+                    else if(color == 2){
+                        send_information(8,x,y+1);
+                    }
+                    else if(color == 3){
+                        send_information(9,x,y+1);
+                    }
+                    else if(color == 4){
+                        send_information(10,x,y+1);
+                    }
+                
+                }
+                else if (*direction == 1|| *direction % 4 == 1){
+                     if(color == 0){
+                        send_information(6,x+1,y);
+                    }
+                    else if(color == 1){
+                        send_information(7,x+1,y+1);
+                    }
+                    else if(color == 2){
+                        send_information(8,x+1,y+1);
+                    }
+                    else if(color == 3){
+                        send_information(9,x+1,y+1);
+                    }
+                    else if(color == 4){
+                        send_information(10,x+1,y+1);
+                    }
+                    
+                }
+                else if(*direction == 2|| *direction % 4 == 2){
+                     if(color == 0){
+                        send_information(6,x,y-1);
+                    }
+                    else if(color == 1){
+                        send_information(7,x,y-1);
+                    }
+                    else if(color == 2){
+                        send_information(8,x,y-1);
+                    }
+                    else if(color == 3){
+                        send_information(9,x,y-1);
+                    }
+                    else if(color == 4){
+                        send_information(10,x,y-1);
+                    }
+                    
+                }
+                else if(*direction == 3|| *direction %4 == 3){
+                     if(color == 0){
+                        send_information(6,x-1,y);
+                    }
+                    else if(color == 1){
+                        send_information(7,x-1,y);
+                    }
+                    else if(color == 2){
+                        send_information(8,x-1,y);
+                    }
+                    else if(color == 3){
+                        send_information(9,x-1,y);
+                    }
+                    else if(color == 4){
+                        send_information(10,x-1,y);
+                    }
+                    
+                }
+
+            }
+
+            moveRobot();
             // send data to visualisation
             // send coordinates
+
             *direction = *direction + 1;
             return 0;
         } 
@@ -81,29 +693,48 @@ int  checkforobstacle(int x, int y,int *direction){
         printf("HILL detected");
         // send data to visualisation
         // send coordinates
-        printf("Robot turned 90 degrees right\n");
-        stepper_enable();
-        stepper_set_speed(65535,65535);
-        stepper_disable();
-        sleep_msec(1000);
+        if(*direction == 0 || *direction%4==0){
+                send_information(20,x,y+1);
+                }
+                else if (*direction == 1|| *direction % 4 == 1){
+                    send_information(20,x+1,y);
+                }
+                else if(*direction == 2|| *direction % 4 == 2){
+                    send_information(20,x,y-1);
+                }
+                else if(*direction == 3|| *direction %4 == 3){
+                    send_information(20,x-1,y);
+                }
+        moveRobot();
         *direction = *direction + 1;
         return 0;
         }
     }
+    if(*direction == 0 || *direction%4==0){
+                send_information(0,x,y+1);
+                }
+                else if (*direction == 1|| *direction % 4 == 1){
+                    send_information(0,x+1,y);
+                }
+                else if(*direction == 2|| *direction % 4 == 2){
+                    send_information(0,x,y-1);
+                }
+                else if(*direction == 3|| *direction %4 == 3){
+                    send_information(0,x-1,y);
+                }
     printf("Empty Space\n");
     return 1;
 }
 
 void move(int *xpoint, int *ypoint, int direction){
 
-    stepper_enable();
-    stepper_set_speed(20000,20000);
-    stepper_steps(500,500);
-    stepper_disable();
-    sleep_msec(1000);
+    // stepper_enable();
+    stepper_set_speed(30000,30000);
+    stepper_steps(-150,-150);
+    sleep_msec(500);
+
     if (direction == 0){
         *ypoint = *ypoint + 1;
-        return;
     }
     else if (direction == 1){
         *xpoint = *xpoint + 1;
@@ -117,7 +748,6 @@ void move(int *xpoint, int *ypoint, int direction){
     else{
         if(direction % 4 == 0){
             *ypoint = *ypoint + 1;
-             return;
         }
         if( direction % 4 == 1){
             *xpoint = *xpoint + 1;
@@ -192,20 +822,20 @@ int checklist(int x,int y,point *list){
         return 1;
     }
     return 0;
-}
+
+    // add a method such that if the upcoming coordinate is within the list,then check to the upcoming points left and right side
+    // if either left side has been visited then go right, and if right has been visited then go left 
+}   
 
 int double_check_list(point *list){
 // checks if all the points in the list repeats twice 
-
-
-    int count = 0;
     if (list == NULL){
         return 0;
     }
 
-    int hash[100][100] = {0};
-    point *temp = list;
     else{
+        int hash[100][100] = {0};
+        point *temp = list;
 
         while(temp != NULL){
             hash[temp->x][temp->y]++;
@@ -245,30 +875,35 @@ int main (void){
     point *list = NULL;
     int current_xpoint = 0;
     int current_ypoint = 0;
-    stepper_init();
     pynq_init();
+    stepper_init();
+    stepper_enable();
     embeddedInit();
+    switchbox_set_pin(IO_AR0, SWB_UART0_RX);
+    switchbox_set_pin(IO_AR1, SWB_UART0_TX);
+    uart_init(UART0);
+    
+    
+
+    // the code traverses the map by moving forward and moving right 
+    //whenever there's an obstacle infront of it,although i
     
     list = addtolist(current_xpoint,current_ypoint,list);
     int valid = double_check_list(list);
     
     int direction = 0; 
     printf(" start position is %d %d\n",current_xpoint,current_ypoint);
-
+    sleep_msec(30000);
     while(valid == 0){
-        checker = checkforobstacle(current_xpoint,current_ypoint, &direction);
+        checker = checkforobstacle( &direction,current_xpoint,current_ypoint);
         if(checker == 1){
             if(list != NULL){
             check_coordinates = checklist(current_xpoint,current_ypoint,list);
              }
              if(check_coordinates == 1){
                 //Robot turns 90 degrees to the right
-                stepper_enable();
-                stepper_set_speed(65535,65535);
-                stepper_steps(-500,450);
+                moveRobot();
                 direction = direction + 1;
-                stepper_disable();
-                sleep_msec(1000);
              }
             move(&current_xpoint,&current_ypoint,direction);
             list = addtolist(current_xpoint,current_ypoint,list);
@@ -278,11 +913,12 @@ int main (void){
 
         printlist(list);
         
-  
 }
 
-return 0;
+stepper_disable();
 stepper_destroy();
 pynq_destroy();
+
+return 0;
 
 }
