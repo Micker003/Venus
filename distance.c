@@ -1,25 +1,8 @@
  /*
- *  TU/e 5EID0::LIBPYNQ Driver for VL53L0X TOF Sensor
- *
- *  Original C library: Larry Bank
- *  Adapted for PYNQ: Walthzer
- * 
+  *  Original C library: Larry Bank, based on Pololu's Arduino library https://github.com/pololu/vl53l0x-arduino
+ *   Adapted for PYNQ: Walthzer
+ *   Adjusted and improved for integration of all sensors on robot: Chi Nguyen
  */
-
-//
-// VL53L0X time of flight range sensor
-// Library to read the distance
-// from the I2C bus
-//
-// by Larry Bank
-//
-// This code is based on Pololu's Arduino library
-// https://github.com/pololu/vl53l0x-arduino
-// (see LICENSE.txt for more info)
-//
-// My version is an attempt to simplify that code and 
-// create a generic C library for Linux
-//
 
 #include <libpynq.h>
 #include <distance.h>
