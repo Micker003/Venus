@@ -11,7 +11,7 @@
  *
  *  Original C library: Larry Bank
  *  Adapted for PYNQ: Walthzer
- * 
+ *  Adjusted and improved for integration of all sensors on robot: Chi Nguyen
  */
 
 //
